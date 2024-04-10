@@ -23,11 +23,11 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory], order_id: int
 
             # Remove green ml
             potions_ml = potion.quantity * 100
-            cur_green_ml = connection.execute(sqlalchemy.text("SELECT num_green_ml FROM global_inventory"))
+            cur_green_ml = connection.execute(sqlalchemy.text("SELECT num_green_ml FROM global_inventory")).scalar_one()
             connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_green_ml = " + (cur_green_ml - potions_ml)))
 
             # Add green potions
-            cur_potion_quantity = connection.execute(sqlalchemy.text("SELECT num_green_potions FROM global_inventory"))
+            cur_potion_quantity = connection.execute(sqlalchemy.text("SELECT num_green_potions FROM global_inventory")).scalar_one()
             cur_potion_quantity += potion.quantity
             connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_green_potions = " + cur_potion_quantity))
 
@@ -42,8 +42,8 @@ def get_bottle_plan():
     """
     # Bottle potions
     with db.engine.begin() as connection:
-        green_ml = connection.execute(sqlalchemy.text("SELECT num_green_ml FROM global_inventory"))
-        green_potions = connection.execute(sqlalchemy.text("SELECT num_green_potions FROM global_inventory"))
+        green_ml = connection.execute(sqlalchemy.text("SELECT num_green_ml FROM global_inventory")).scalar_one()
+        green_potions = connection.execute(sqlalchemy.text("SELECT num_green_potions FROM global_inventory")).scalar_one()
         while green_ml >= 100:
             green_ml -= 100
             green_potions += 1

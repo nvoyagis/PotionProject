@@ -10,7 +10,7 @@ def get_catalog():
     Each unique item combination must have only a single price.
     """
     with db.engine.begin() as connection:
-        num_pots = connection.execute(sqlalchemy.text("SELECT num_green_potions FROM global_inventory"))
+        num_pots = connection.execute(sqlalchemy.text("SELECT num_green_potions FROM global_inventory")).scalar_one()
     
     if num_pots >= 1:
         return [
