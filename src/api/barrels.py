@@ -59,3 +59,4 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
                 }
             ]
 
+    return []
