@@ -96,7 +96,7 @@ class CartItem(BaseModel):
 
 @router.post("/{cart_id}/items/{item_sku}")
 def set_item_quantity(cart_id: int, item_sku: str, cart_item: CartItem):
-    """ """
+    """ Add cart_item.quantity to a new cart, include item_sku as well and cart_id """
     with db.engine.begin() as connection:
         if connection.execute(sqlalchemy.text("SELECT num_green_potions FROM global_inventory")).scalar_one() >= 1:
             cart_item.quantity = 1

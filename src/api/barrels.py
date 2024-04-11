@@ -23,19 +23,30 @@ class Barrel(BaseModel):
 def post_deliver_barrels(barrels_delivered: list[Barrel], order_id: int):
     """ """
     print(f"barrels delievered: {barrels_delivered} order_id: {order_id}")
+    red_ml = 0
     green_ml = 0
+    blue_ml = 0
     sum_price = 0
 
+    # Add RBG ml & find total price
     for barrel in barrels_delivered:
-        green_ml += barrel.ml_per_barrel * barrel.quantity
+        if barrel.potion_type == [100, 0, 0 , 0]:
+            red_ml += barrel.ml_per_barrel * barrel.quantity
+        elif barrel.potion_type == [0, 100, 0 , 0]:
+            green_ml += barrel.ml_per_barrel * barrel.quantity
+        elif barrel.potion_type == [0, 0, 100 , 0]:
+            blue_ml += barrel.ml_per_barrel * barrel.quantity
+
         sum_price += barrel.price
 
-    # Set new amount of gold & green ml
+    # Set new amount of gold & RGB ml
     with db.engine.begin() as connection:
         cur_gold = connection.execute(sqlalchemy.text("SELECT gold FROM global_inventory")).scalar_one()
         cur_gold -= sum_price
 
+        connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_red_ml = " + red_ml))
         connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_green_ml = " + green_ml))
+        connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_blue_ml = " + blue_ml))
         connection.execute(sqlalchemy.text("UPDATE global_inventory SET gold = " + cur_gold))
 
     return "OK"
