@@ -44,10 +44,10 @@ def post_deliver_barrels(barrels_delivered: list[Barrel], order_id: int):
         cur_gold = connection.execute(sqlalchemy.text("SELECT gold FROM global_inventory")).scalar_one()
         cur_gold -= sum_price
 
-        connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_red_ml = " + red_ml))
-        connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_green_ml = " + green_ml))
-        connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_blue_ml = " + blue_ml))
-        connection.execute(sqlalchemy.text("UPDATE global_inventory SET gold = " + cur_gold))
+        connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_red_ml = " + str(red_ml)))
+        connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_green_ml = " + str(green_ml)))
+        connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_blue_ml = " + str(blue_ml)))
+        connection.execute(sqlalchemy.text("UPDATE global_inventory SET gold = " + str(cur_gold)))
 
     return "OK"
 

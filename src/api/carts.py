@@ -87,7 +87,8 @@ def post_visits(visit_id: int, customers: list[Customer]):
 @router.post("/")
 def create_cart(new_cart: Customer):
     """ """
-    return {"cart_id": 1}
+    c_id = new_cart.customer_name + new_cart.character_class + str(new_cart.level)
+    return {"cart_id": c_id}
 
 
 class CartItem(BaseModel):
@@ -110,6 +111,6 @@ class CartCheckout(BaseModel):
 def checkout(cart_id: int, cart_checkout: CartCheckout):
     """ """
     with db.engine.begin() as connection:
-        connection.execute(sqlalchemy.text("UPDATE global_inventory SET gold = " + cart_checkout))
+        connection.execute(sqlalchemy.text("UPDATE global_inventory SET gold = " + cart_checkout.payment))
 
     return {"total_potions_bought": 1, "total_gold_paid": cart_checkout}
