@@ -71,14 +71,14 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
                     "quantity": barrel.quantity,
                 }
                 ]
-            elif barrel.quantity * barrel.price <= gold and num_green_potions < 10 and barrel.sku == "SMALL_GREEN_BARREL": 
+            if barrel.quantity * barrel.price <= gold and num_green_potions < 10 and barrel.sku == "SMALL_GREEN_BARREL": 
                 return [
                 {
                     "sku": "SMALL_GREEN_BARREL",
                     "quantity": barrel.quantity,
                 }
                 ]
-            elif barrel.quantity * barrel.price <= gold and num_blue_potions < 10 and barrel.sku == "SMALL_BLUE_BARREL": 
+            if barrel.quantity * barrel.price <= gold and num_blue_potions < 10 and barrel.sku == "SMALL_BLUE_BARREL": 
                 return [
                 {
                     "sku": "SMALL_BLUE_BARREL",

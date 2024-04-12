@@ -83,12 +83,13 @@ def post_visits(visit_id: int, customers: list[Customer]):
 
     return "OK"
 
-new_cart_id = 0
+unique_cart_id = 0
+
 @router.post("/")
 def create_cart(new_cart: Customer):
     """ """
-    new_cart_id += 1
-    return {"cart_id": new_cart_id}
+    unique_cart_id_cart_id += 1
+    return {"cart_id": unique_cart_id}
 
 
 class CartItem(BaseModel):
@@ -99,9 +100,6 @@ class CartItem(BaseModel):
 @router.post("/{cart_id}/items/{item_sku}")
 def set_item_quantity(cart_id: int, item_sku: str, cart_item: CartItem):
     """ Add cart_item.quantity to a new cart, include item_sku as well and cart_id """
-    with db.engine.begin() as connection:
-        if connection.execute(sqlalchemy.text("SELECT num_green_potions FROM global_inventory")).scalar_one() >= 1:
-            cart_item.quantity = 1
     return "OK"
 
 
