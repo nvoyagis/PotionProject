@@ -21,7 +21,7 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory], order_id: int
     with db.engine.begin() as connection:
         for potion in potions_delivered:
 
-            # Remove RGB color
+            # Remove RGB potions
             if potion.potion_type == [100, 0, 0, 0]:
                 red_ml = potion.quantity * 100
                 cur_red_ml = connection.execute(sqlalchemy.text("SELECT num_red_ml FROM global_inventory")).scalar_one()

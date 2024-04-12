@@ -95,6 +95,7 @@ class CartItem(BaseModel):
     quantity: int
 
 
+# use create_cart?
 @router.post("/{cart_id}/items/{item_sku}")
 def set_item_quantity(cart_id: int, item_sku: str, cart_item: CartItem):
     """ Add cart_item.quantity to a new cart, include item_sku as well and cart_id """
