@@ -30,11 +30,11 @@ def post_deliver_barrels(barrels_delivered: list[Barrel], order_id: int):
 
     # Add RBG ml & find total price
     for barrel in barrels_delivered:
-        if barrel.potion_type == [100, 0, 0 , 0]:
+        if barrel.potion_type == [1, 0, 0 , 0]:
             red_ml += barrel.ml_per_barrel * barrel.quantity
-        elif barrel.potion_type == [0, 100, 0 , 0]:
+        elif barrel.potion_type == [0, 1, 0 , 0]:
             green_ml += barrel.ml_per_barrel * barrel.quantity
-        elif barrel.potion_type == [0, 0, 100 , 0]:
+        elif barrel.potion_type == [0, 0, 1 , 0]:
             blue_ml += barrel.ml_per_barrel * barrel.quantity
 
         sum_price += barrel.price
