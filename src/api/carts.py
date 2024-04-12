@@ -88,6 +88,7 @@ unique_cart_id = 0
 @router.post("/")
 def create_cart(new_cart: Customer):
     """ """
+    global unique_cart_id
     unique_cart_id += 1
     return {"cart_id": unique_cart_id}
 
