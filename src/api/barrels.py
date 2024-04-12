@@ -59,14 +59,30 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
 
     # Purchase a barrel if the number of green potions is less than 10 and it can be afforded
     with db.engine.begin() as connection:
+        num_red_potions = connection.execute(sqlalchemy.text("SELECT num_red_potions FROM global_inventory")).scalar_one()
         num_green_potions = connection.execute(sqlalchemy.text("SELECT num_green_potions FROM global_inventory")).scalar_one()
+        num_blue_potions = connection.execute(sqlalchemy.text("SELECT num_blue_potions FROM global_inventory")).scalar_one()
         for barrel in wholesale_catalog:
             gold = connection.execute(sqlalchemy.text("SELECT gold FROM global_inventory")).scalar_one()
-            if barrel.price <= gold and num_green_potions < 10 and barrel.sku == "SMALL_GREEN_BARREL": 
+            if barrel.quantity * barrel.price <= gold and num_red_potions < 10 and barrel.sku == "SMALL_RED_BARREL": 
+                return [
+                {
+                    "sku": "SMALL_RED_BARREL",
+                    "quantity": barrel.quantity,
+                }
+                ]
+            elif barrel.quantity * barrel.price <= gold and num_green_potions < 10 and barrel.sku == "SMALL_GREEN_BARREL": 
                 return [
                 {
                     "sku": "SMALL_GREEN_BARREL",
-                    "quantity": 1,
+                    "quantity": barrel.quantity,
+                }
+                ]
+            elif barrel.quantity * barrel.price <= gold and num_blue_potions < 10 and barrel.sku == "SMALL_BLUE_BARREL": 
+                return [
+                {
+                    "sku": "SMALL_BLUE_BARREL",
+                    "quantity": barrel.quantity,
                 }
             ]
 
