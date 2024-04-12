@@ -88,7 +88,7 @@ unique_cart_id = 0
 @router.post("/")
 def create_cart(new_cart: Customer):
     """ """
-    unique_cart_id_cart_id += 1
+    unique_cart_id += 1
     return {"cart_id": unique_cart_id}
 
 
