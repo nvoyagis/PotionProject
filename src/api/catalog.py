@@ -14,7 +14,8 @@ def get_catalog():
         num_green_pots = connection.execute(sqlalchemy.text("SELECT num_green_potions FROM global_inventory")).scalar_one()
         num_blue_pots = connection.execute(sqlalchemy.text("SELECT num_blue_potions FROM global_inventory")).scalar_one()
     
-        return [
+        if num_red_pots !=0 or num_green_pots != 0 or num_blue_pots != 0:
+            return [
                 {
                     "sku": "RED_POTION_0",
                     "name": "red potion",
@@ -37,3 +38,4 @@ def get_catalog():
                     "potion_type": [0, 0, 100, 0],
                 }
             ]
+        return []
