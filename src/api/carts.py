@@ -95,14 +95,15 @@ def create_cart(new_cart: Customer):
 class CartItem(BaseModel):
     quantity: int
 
-
-# use create_cart?
+ids_and_carts = {}
 @router.post("/{cart_id}/items/{item_sku}")
 def set_item_quantity(cart_id: int, item_sku: str, cart_item: CartItem):
-    """ Add cart_item.quantity to a new cart, include item_sku as well and cart_id """
+    global ids_and_carts
+    ids_and_carts[cart_id] = [cart_item.quantity, item_sku]
+    ids_and_carts.update({cart_id: [ids_and_carts.get(cart_id[0]), 0]})
     return "OK"
 
-
+# payment is not amt of gold apparently
 class CartCheckout(BaseModel):
     payment: str
 
@@ -110,6 +111,13 @@ class CartCheckout(BaseModel):
 def checkout(cart_id: int, cart_checkout: CartCheckout):
     """ """
     with db.engine.begin() as connection:
-        connection.execute(sqlalchemy.text("UPDATE global_inventory SET gold = " + cart_checkout.payment))
-
-    return {"total_potions_bought": 1, "total_gold_paid": cart_checkout}
+        cur_gold = connection.execute(sqlalchemy.text("SELECT gold FROM global_inventory")).scalar_one()
+        if ids_and_carts.get(cart_id)[1] == "RED_POTION_0":
+            connection.execute(sqlalchemy.text("UPDATE global_inventory SET gold = " + str(cur_gold + 25 * ids_and_carts.get(cart_id[0]))))
+            return {"total_potions_bought": ids_and_carts.get(cart_id)[0], "total_gold_paid": 25 * ids_and_carts.get(cart_id[0])}
+        elif ids_and_carts.get(cart_id)[1] == "GREEN_POTION_0":
+            connection.execute(sqlalchemy.text("UPDATE global_inventory SET gold = " + str(cur_gold + 30 * ids_and_carts.get(cart_id[0]))))
+            return {"total_potions_bought": ids_and_carts.get(cart_id)[0], "total_gold_paid": 30 * ids_and_carts.get(cart_id[0])}
+        elif ids_and_carts.get(cart_id)[1] == "BLUE_POTION_0":
+            connection.execute(sqlalchemy.text("UPDATE global_inventory SET gold = " + str(cur_gold + 35 * ids_and_carts.get(cart_id[0]))))
+            return {"total_potions_bought": ids_and_carts.get(cart_id)[0], "total_gold_paid": 35 * ids_and_carts.get(cart_id[0])}

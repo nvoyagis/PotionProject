@@ -81,8 +81,8 @@ def get_bottle_plan():
 
     # Return all potions
     
-
-    return [
+    if red_potions != 0 and green_potions != 0 and blue_potions != 0:
+        return [
             {
                 "potion_type": [100, 0, 0, 0],
                 "quantity": red_potions,
@@ -96,6 +96,8 @@ def get_bottle_plan():
                 "quantity": blue_potions,
             }
         ]
+    
+    return []
 
 if __name__ == "__main__":
     print(get_bottle_plan())
