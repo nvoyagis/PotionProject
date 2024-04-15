@@ -97,6 +97,66 @@ def get_bottle_plan():
             }
         ]
     
+    if red_potions == 0 and green_potions != 0 and blue_potions != 0:
+        return [
+            {
+                "potion_type": [0, 100, 0, 0],
+                "quantity": green_potions,
+            },
+            {
+                "potion_type": [0, 0, 100, 0],
+                "quantity": blue_potions,
+            }
+        ]
+    
+    if red_potions != 0 and green_potions == 0 and blue_potions != 0:
+        return [
+            {
+                "potion_type": [100, 0, 0, 0],
+                "quantity": red_potions,
+            },
+            {
+                "potion_type": [0, 0, 100, 0],
+                "quantity": blue_potions,
+            }
+        ]
+    
+    if red_potions != 0 and green_potions != 0 and blue_potions == 0:
+        return [
+            {
+                "potion_type": [100, 0, 0, 0],
+                "quantity": red_potions,
+            },
+            {
+                "potion_type": [0, 100, 0, 0],
+                "quantity": green_potions,
+            }
+        ]
+
+    if red_potions == 0 and green_potions == 0 and blue_potions != 0:
+        return [
+            {
+                "potion_type": [0, 0, 100, 0],
+                "quantity": blue_potions,
+            }
+        ]
+    
+    if red_potions == 0 and green_potions != 0 and blue_potions == 0:
+        return [
+            {
+                "potion_type": [0, 100, 0, 0],
+                "quantity": green_potions,
+            }
+        ]
+    
+    if red_potions != 0 and green_potions == 0 and blue_potions == 0:
+        return [
+            {
+                "potion_type": [100, 0, 0, 0],
+                "quantity": red_potions,
+            }
+        ]
+    
     return []
 
 if __name__ == "__main__":
