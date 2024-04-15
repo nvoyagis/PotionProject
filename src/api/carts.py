@@ -99,8 +99,7 @@ ids_and_carts = {}
 @router.post("/{cart_id}/items/{item_sku}")
 def set_item_quantity(cart_id: int, item_sku: str, cart_item: CartItem):
     global ids_and_carts
-    ids_and_carts[cart_id] = [cart_item.quantity, item_sku]
-    ids_and_carts.update({cart_id: [ids_and_carts.get(cart_id[0]), 0]})
+    ids_and_carts.update({cart_id: [cart_item.quantity, item_sku]})
     return "OK"
 
 # payment is not amt of gold apparently
