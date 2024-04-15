@@ -90,7 +90,7 @@ def get_catalog():
                     "quantity": num_red_pots,
                     "price": 25,
                     "potion_type": [100, 0, 0, 0],
-                },
+                }
             ]
         
         if num_red_pots != 0 and num_green_pots == 0 and num_blue_pots == 0:
@@ -101,7 +101,7 @@ def get_catalog():
                     "quantity": num_red_pots,
                     "price": 25,
                     "potion_type": [100, 0, 0, 0],
-                },
+                }
             ]
         
         if num_red_pots == 0 and num_green_pots != 0 and num_blue_pots == 0:
@@ -112,7 +112,7 @@ def get_catalog():
                     "quantity": num_green_pots,
                     "price": 30,
                     "potion_type": [0, 100, 0, 0],
-                },
+                }
             ]
         
         if num_red_pots == 0 and num_green_pots == 0 and num_blue_pots != 0:
@@ -123,7 +123,7 @@ def get_catalog():
                     "quantity": num_blue_pots,
                     "price": 35,
                     "potion_type": [0, 0, 100, 0],
-                },
+                }
             ]
 
         return []
