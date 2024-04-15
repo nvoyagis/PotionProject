@@ -38,4 +38,92 @@ def get_catalog():
                     "potion_type": [0, 0, 100, 0],
                 }
             ]
+        
+        if num_red_pots == 0 and num_green_pots != 0 and num_blue_pots != 0:
+            return [
+                {
+                    "sku": "GREEN_POTION_0",
+                    "name": "green potion",
+                    "quantity": num_green_pots,
+                    "price": 30,
+                    "potion_type": [0, 100, 0, 0],
+                },
+                {
+                    "sku": "BLUE_POTION_0",
+                    "name": "blue potion",
+                    "quantity": num_blue_pots,
+                    "price": 35,
+                    "potion_type": [0, 0, 100, 0],
+                }
+            ]
+        
+        if num_red_pots != 0 and num_green_pots == 0 and num_blue_pots != 0:
+            return [
+                {
+                    "sku": "RED_POTION_0",
+                    "name": "red potion",
+                    "quantity": num_red_pots,
+                    "price": 25,
+                    "potion_type": [100, 0, 0, 0],
+                },
+                {
+                    "sku": "BLUE_POTION_0",
+                    "name": "blue potion",
+                    "quantity": num_blue_pots,
+                    "price": 35,
+                    "potion_type": [0, 0, 100, 0],
+                }
+            ]
+        
+        if num_red_pots != 0 and num_green_pots != 0 and num_blue_pots == 0:
+            return [
+                {
+                    "sku": "GREEN_POTION_0",
+                    "name": "green potion",
+                    "quantity": num_green_pots,
+                    "price": 30,
+                    "potion_type": [0, 100, 0, 0],
+                },
+                {
+                    "sku": "RED_POTION_0",
+                    "name": "red potion",
+                    "quantity": num_red_pots,
+                    "price": 25,
+                    "potion_type": [100, 0, 0, 0],
+                },
+            ]
+        
+        if num_red_pots != 0 and num_green_pots == 0 and num_blue_pots == 0:
+            return [
+                {
+                    "sku": "RED_POTION_0",
+                    "name": "red potion",
+                    "quantity": num_red_pots,
+                    "price": 25,
+                    "potion_type": [100, 0, 0, 0],
+                },
+            ]
+        
+        if num_red_pots == 0 and num_green_pots != 0 and num_blue_pots == 0:
+            return [
+                {
+                    "sku": "GREEN_POTION_0",
+                    "name": "green potion",
+                    "quantity": num_green_pots,
+                    "price": 30,
+                    "potion_type": [0, 100, 0, 0],
+                },
+            ]
+        
+        if num_red_pots == 0 and num_green_pots == 0 and num_blue_pots != 0:
+            return [
+                {
+                    "sku": "BLUE_POTION_0",
+                    "name": "blue potion",
+                    "quantity": num_blue_pots,
+                    "price": 35,
+                    "potion_type": [0, 0, 100, 0],
+                },
+            ]
+
         return []
