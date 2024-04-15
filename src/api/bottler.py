@@ -85,15 +85,15 @@ def get_bottle_plan():
         return [
             {
                 "potion_type": [100, 0, 0, 0],
-                "quantity": red_potions,
+                "quantity": red_potions
             },
             {
                 "potion_type": [0, 100, 0, 0],
-                "quantity": green_potions,
+                "quantity": green_potions
             },
             {
                 "potion_type": [0, 0, 100, 0],
-                "quantity": blue_potions,
+                "quantity": blue_potions
             }
         ]
     
@@ -101,11 +101,11 @@ def get_bottle_plan():
         return [
             {
                 "potion_type": [0, 100, 0, 0],
-                "quantity": green_potions,
+                "quantity": green_potions
             },
             {
                 "potion_type": [0, 0, 100, 0],
-                "quantity": blue_potions,
+                "quantity": blue_potions
             }
         ]
     
@@ -113,11 +113,11 @@ def get_bottle_plan():
         return [
             {
                 "potion_type": [100, 0, 0, 0],
-                "quantity": red_potions,
+                "quantity": red_potions
             },
             {
                 "potion_type": [0, 0, 100, 0],
-                "quantity": blue_potions,
+                "quantity": blue_potions
             }
         ]
     
@@ -125,11 +125,11 @@ def get_bottle_plan():
         return [
             {
                 "potion_type": [100, 0, 0, 0],
-                "quantity": red_potions,
+                "quantity": red_potions
             },
             {
                 "potion_type": [0, 100, 0, 0],
-                "quantity": green_potions,
+                "quantity": green_potions
             }
         ]
 
@@ -137,7 +137,7 @@ def get_bottle_plan():
         return [
             {
                 "potion_type": [0, 0, 100, 0],
-                "quantity": blue_potions,
+                "quantity": blue_potions
             }
         ]
     
@@ -145,7 +145,7 @@ def get_bottle_plan():
         return [
             {
                 "potion_type": [0, 100, 0, 0],
-                "quantity": green_potions,
+                "quantity": green_potions
             }
         ]
     
@@ -153,7 +153,7 @@ def get_bottle_plan():
         return [
             {
                 "potion_type": [100, 0, 0, 0],
-                "quantity": red_potions,
+                "quantity": red_potions
             }
         ]
     

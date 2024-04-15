@@ -23,26 +23,28 @@ class Barrel(BaseModel):
 def post_deliver_barrels(barrels_delivered: list[Barrel], order_id: int):
     """ """
     print(f"barrels delievered: {barrels_delivered} order_id: {order_id}")
-    red_ml = 0
-    green_ml = 0
-    blue_ml = 0
-    sum_price = 0
 
-    # Add RBG ml & find total price
+    with db.engine.begin() as connection:
+        red_ml = connection.execute(sqlalchemy.text("SELECT num_red_ml FROM global_inventory")).scalar_one()
+        green_ml = connection.execute(sqlalchemy.text("SELECT num_green_ml FROM global_inventory")).scalar_one()
+        blue_ml = connection.execute(sqlalchemy.text("SELECT num_blue_ml FROM global_inventory")).scalar_one()
+        cost = 0
+
+    # Add RBG ml & find total price. Use only 1 barrel b.c. only 1 type of barrel is purchased at a time.
     for barrel in barrels_delivered:
         if barrel.potion_type == [1, 0, 0 , 0]:
-            red_ml += barrel.ml_per_barrel * barrel.quantity
+            red_ml += barrel.ml_per_barrel
         elif barrel.potion_type == [0, 1, 0 , 0]:
-            green_ml += barrel.ml_per_barrel * barrel.quantity
+            green_ml += barrel.ml_per_barrel
         elif barrel.potion_type == [0, 0, 1 , 0]:
-            blue_ml += barrel.ml_per_barrel * barrel.quantity
+            blue_ml += barrel.ml_per_barrel
 
-        sum_price += barrel.price
+        cost += barrel.price 
 
     # Set new amount of gold & RGB ml
     with db.engine.begin() as connection:
         cur_gold = connection.execute(sqlalchemy.text("SELECT gold FROM global_inventory")).scalar_one()
-        cur_gold -= sum_price
+        cur_gold -= cost
 
         connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_red_ml = " + str(red_ml)))
         connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_green_ml = " + str(green_ml)))
@@ -71,14 +73,14 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
                     "quantity": 1
                 }
                 ]
-            if barrel.price <= gold and num_green_potions < 10 and barrel.potion_type == [0, 1, 0, 0]: 
+            elif barrel.price <= gold and num_green_potions < 10 and barrel.potion_type == [0, 1, 0, 0]: 
                 return [
                 {
                     "sku": barrel.sku,
                     "quantity": 1
                 }
                 ]
-            if barrel.price <= gold and num_blue_potions < 10 and barrel.potion_type == [0, 0, 1, 0]: 
+            elif barrel.price <= gold and num_blue_potions < 10 and barrel.potion_type == [0, 0, 1, 0]: 
                 return [
                 {
                     "sku": barrel.sku,
