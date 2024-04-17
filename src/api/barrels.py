@@ -38,6 +38,9 @@ def post_deliver_barrels(barrels_delivered: list[Barrel], order_id: int):
             green_ml += barrel.ml_per_barrel
         elif barrel.potion_type == [0, 0, 1 , 0]:
             blue_ml += barrel.ml_per_barrel
+        # Defensive programming! (helps identify bugs)
+        else:
+            raise Exception("Invalid potion type")
 
         cost += barrel.price 
 
@@ -54,6 +57,7 @@ def post_deliver_barrels(barrels_delivered: list[Barrel], order_id: int):
     return "OK"
 
 # Gets called once a day, v1
+# Make min & max thresholds
 @router.post("/plan")
 def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
     """ """
