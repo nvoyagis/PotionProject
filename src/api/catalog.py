@@ -34,7 +34,7 @@ def get_catalog():
                     "sku": "BLUE_POTION_0",
                     "name": "blue potion",
                     "quantity": num_blue_pots,
-                    "price": 25,
+                    "price": 28,
                     "potion_type": [0, 0, 100, 0]
                 }
             ]
@@ -52,7 +52,7 @@ def get_catalog():
                     "sku": "BLUE_POTION_0",
                     "name": "blue potion",
                     "quantity": num_blue_pots,
-                    "price": 25,
+                    "price": 28,
                     "potion_type": [0, 0, 100, 0]
                 }
             ]
@@ -70,7 +70,7 @@ def get_catalog():
                     "sku": "BLUE_POTION_0",
                     "name": "blue potion",
                     "quantity": num_blue_pots,
-                    "price": 25,
+                    "price": 28,
                     "potion_type": [0, 0, 100, 0]
                 }
             ]
@@ -121,7 +121,7 @@ def get_catalog():
                     "sku": "BLUE_POTION_0",
                     "name": "blue potion",
                     "quantity": num_blue_pots,
-                    "price": 25,
+                    "price": 28,
                     "potion_type": [0, 0, 100, 0]
                 }
             ]
