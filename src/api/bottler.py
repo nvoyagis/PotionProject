@@ -61,19 +61,19 @@ def get_bottle_plan():
     # Bottle RGB potions
     with db.engine.begin() as connection:
         red_ml = connection.execute(sqlalchemy.text("SELECT num_red_ml FROM global_inventory")).scalar_one()
-        red_potions = connection.execute(sqlalchemy.text("SELECT num_red_potions FROM global_inventory")).scalar_one()
+        red_potions = 0
         while red_ml >= 100:
             red_ml -= 100
             red_potions += 1
 
         green_ml = connection.execute(sqlalchemy.text("SELECT num_green_ml FROM global_inventory")).scalar_one()
-        green_potions = connection.execute(sqlalchemy.text("SELECT num_green_potions FROM global_inventory")).scalar_one()
+        green_potions = 0
         while green_ml >= 100:
             green_ml -= 100
             green_potions += 1
 
         blue_ml = connection.execute(sqlalchemy.text("SELECT num_blue_ml FROM global_inventory")).scalar_one()
-        blue_potions = connection.execute(sqlalchemy.text("SELECT num_blue_potions FROM global_inventory")).scalar_one()
+        blue_potions = 0
         while blue_ml >= 100:
             blue_ml -= 100
             blue_potions += 1
