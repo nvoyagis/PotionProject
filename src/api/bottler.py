@@ -73,53 +73,52 @@ def get_bottle_plan():
     with db.engine.begin() as connection:
         # Make an array that contains tuples for each color (in ml) that I have and then another array for the types of potions being sold
         colors = connection.execute(sqlalchemy.text("SELECT * FROM resources")).first()
-        for color in colors:
             
-            # Add different potions to the plan
-            if(color[0] >= 50 and color[1] >= 50):
-                plan.append({
-                    "potion_type": [50, 50, 0, 0],
-                    "quantity": 1
-                })
-                color[50] -= 50
-                color[50] -= 50
+        # Add different potions to the plan
+        if(colors[0] >= 50 and colors[1] >= 50):
+            plan.append({
+                "potion_type": [50, 50, 0, 0],
+                "quantity": 1
+            })
+            colors[50] -= 50
+            colors[50] -= 50
 
-            if(color[1] >= 50 and color[2] >= 50):
-                plan.append({
-                    "potion_type": [0, 50, 50, 0],
-                    "quantity": 1
-                })
-                color[1] -= 50
-                color[2] -= 50
+        if(colors[1] >= 50 and colors[2] >= 50):
+            plan.append({
+                "potion_type": [0, 50, 50, 0],
+                "quantity": 1
+            })
+            colors[1] -= 50
+            colors[2] -= 50
             
-            if(color[0] >= 50 and color[2] >= 50):
-                plan.append({
-                    "potion_type": [50, 0, 50, 0],
-                    "quantity": 1
-                })
-                color[0] -= 50
-                color[2] -= 50
+        if(colors[0] >= 50 and colors[2] >= 50):
+            plan.append({
+                "potion_type": [50, 0, 50, 0],
+                "quantity": 1
+            })
+            colors[0] -= 50
+            colors[2] -= 50
 
-            if(color[0] >= 100):
-                plan.append({
-                    "potion_type": [100, 0, 0, 0],
-                    "quantity": 1
-                })
-                color[0] -= 100
+        if(colors[0] >= 100):
+            plan.append({
+                "potion_type": [100, 0, 0, 0],
+                "quantity": 1
+            })
+            colors[0] -= 100
 
-            if(color[1] >= 100):
-                plan.append({
-                    "potion_type": [0, 100, 0, 0],
-                    "quantity": 1
-                })
-                color[1] -= 100
+        if(colors[1] >= 100):
+            plan.append({
+                "potion_type": [0, 100, 0, 0],
+                "quantity": 1
+            })
+            colors[1] -= 100
 
-            if(color[2] >= 100):
-                plan.append({
-                    "potion_type": [0, 0, 100, 0],
-                    "quantity": 1
-                })
-                color[2] -= 100
+        if(colors[2] >= 100):
+            plan.append({
+                "potion_type": [0, 0, 100, 0],
+                "quantity": 1
+            })
+            colors[2] -= 100
         
         return plan
 
