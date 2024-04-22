@@ -10,120 +10,17 @@ def get_catalog():
     Each unique item combination must have only a single price.
     """
     with db.engine.begin() as connection:
-        num_red_pots = connection.execute(sqlalchemy.text("SELECT num_red_potions FROM global_inventory")).scalar_one()
-        num_green_pots = connection.execute(sqlalchemy.text("SELECT num_green_potions FROM global_inventory")).scalar_one()
-        num_blue_pots = connection.execute(sqlalchemy.text("SELECT num_blue_potions FROM global_inventory")).scalar_one()
-    
-        if num_red_pots !=0 and num_green_pots != 0 and num_blue_pots != 0:
-            return [
-                {
-                    "sku": "RED_POTION_0",
-                    "name": "red potion",
-                    "quantity": num_red_pots,
-                    "price": 35,
-                    "potion_type": [100, 0, 0, 0]
-                },
-                {
-                    "sku": "GREEN_POTION_0",
-                    "name": "green potion",
-                    "quantity": num_green_pots,
-                    "price": 30,
-                    "potion_type": [0, 100, 0, 0]
-                },
-                {
-                    "sku": "BLUE_POTION_0",
-                    "name": "blue potion",
-                    "quantity": num_blue_pots,
-                    "price": 28,
-                    "potion_type": [0, 0, 100, 0]
-                }
-            ]
+        item_list = []
+        # Store sku & quantity of each potion in a CursorResult
+        potion_info = connection.execute(sqlalchemy.text("SELECT inventory, sky, type, price FROM potion_stock"))
         
-        if num_red_pots == 0 and num_green_pots != 0 and num_blue_pots != 0:
-            return [
-                {
-                    "sku": "GREEN_POTION_0",
-                    "name": "green potion",
-                    "quantity": num_green_pots,
-                    "price": 30,
-                    "potion_type": [0, 100, 0, 0]
-                },
-                {
-                    "sku": "BLUE_POTION_0",
-                    "name": "blue potion",
-                    "quantity": num_blue_pots,
-                    "price": 28,
-                    "potion_type": [0, 0, 100, 0]
-                }
-            ]
-        
-        if num_red_pots != 0 and num_green_pots == 0 and num_blue_pots != 0:
-            return [
-                {
-                    "sku": "RED_POTION_0",
-                    "name": "red potion",
-                    "quantity": num_red_pots,
-                    "price": 35,
-                    "potion_type": [100, 0, 0, 0]
-                },
-                {
-                    "sku": "BLUE_POTION_0",
-                    "name": "blue potion",
-                    "quantity": num_blue_pots,
-                    "price": 28,
-                    "potion_type": [0, 0, 100, 0]
-                }
-            ]
-        
-        if num_red_pots != 0 and num_green_pots != 0 and num_blue_pots == 0:
-            return [
-                {
-                    "sku": "GREEN_POTION_0",
-                    "name": "green potion",
-                    "quantity": num_green_pots,
-                    "price": 30,
-                    "potion_type": [0, 100, 0, 0]
-                },
-                {
-                    "sku": "RED_POTION_0",
-                    "name": "red potion",
-                    "quantity": num_red_pots,
-                    "price": 35,
-                    "potion_type": [100, 0, 0, 0]
-                }
-            ]
-        
-        if num_red_pots != 0 and num_green_pots == 0 and num_blue_pots == 0:
-            return [
-                {
-                    "sku": "RED_POTION_0",
-                    "name": "red potion",
-                    "quantity": num_red_pots,
-                    "price": 35,
-                    "potion_type": [100, 0, 0, 0]
-                }
-            ]
-        
-        if num_red_pots == 0 and num_green_pots != 0 and num_blue_pots == 0:
-            return [
-                {
-                    "sku": "GREEN_POTION_0",
-                    "name": "green potion",
-                    "quantity": num_green_pots,
-                    "price": 30,
-                    "potion_type": [0, 100, 0, 0]
-                }
-            ]
-        
-        if num_red_pots == 0 and num_green_pots == 0 and num_blue_pots != 0:
-            return [
-                {
-                    "sku": "BLUE_POTION_0",
-                    "name": "blue potion",
-                    "quantity": num_blue_pots,
-                    "price": 28,
-                    "potion_type": [0, 0, 100, 0]
-                }
-            ]
-
-        return []
+        # Get data from CursorResult
+        for row in potion_info:
+            item_list.append({
+                "sku": row.sku,
+                "quantity": row.inventory,
+                "price": row.price,
+                "potion_type": row.type
+            })
+            
+        return item_list

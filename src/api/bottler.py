@@ -49,6 +49,14 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory], order_id: int
                 cur_blue_quantity += potion.quantity
                 connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_blue_potions = " + str(cur_blue_quantity)))
 
+    # Make 1 of each potion that's possible to make (while updating the resources used)
+
+
+
+
+
+
+
     print(f"potions delivered: {potions_delivered} order_id: {order_id}")
 
     return "OK"
@@ -59,6 +67,69 @@ def get_bottle_plan():
     Go from barrel to bottle.
     """
     # Bottle RGB potions
+    
+    plan = []
+
+    with db.engine.begin() as connection:
+        # Make an array that contains tuples for each color (in ml) that I have and then another array for the types of potions being sold
+        colors = connection.execute(sqlalchemy.text("SELECT * FROM resources")).first()
+        for color in colors:
+            
+            # Add different potions to the plan
+            if(color[0] >= 50 and color[1] >= 50):
+                plan.append({
+                    "potion_type": [50, 50, 0, 0],
+                    "quantity": 1
+                })
+                color[50] -= 50
+                color[50] -= 50
+
+            if(color[1] >= 50 and color[2] >= 50):
+                plan.append({
+                    "potion_type": [0, 50, 50, 0],
+                    "quantity": 1
+                })
+                color[1] -= 50
+                color[2] -= 50
+            
+            if(color[0] >= 50 and color[2] >= 50):
+                plan.append({
+                    "potion_type": [50, 0, 50, 0],
+                    "quantity": 1
+                })
+                color[0] -= 50
+                color[2] -= 50
+
+            if(color[0] >= 100):
+                plan.append({
+                    "potion_type": [100, 0, 0, 0],
+                    "quantity": 1
+                })
+                color[0] -= 100
+
+            if(color[1] >= 100):
+                plan.append({
+                    "potion_type": [0, 100, 0, 0],
+                    "quantity": 1
+                })
+                color[1] -= 100
+
+            if(color[2] >= 100):
+                plan.append({
+                    "potion_type": [0, 0, 100, 0],
+                    "quantity": 1
+                })
+                color[2] -= 100
+        
+        return plan
+
+
+
+
+
+
+
+
     with db.engine.begin() as connection:
         red_ml = connection.execute(sqlalchemy.text("SELECT num_red_ml FROM global_inventory")).scalar_one()
         red_potions = 0

@@ -89,6 +89,8 @@ def create_cart(new_cart: Customer):
     """ """
     global unique_cart_id
     unique_cart_id += 1
+    with db.engine.begin() as connection:
+        connection.execute(sqlalchemy.text("INSERT INTO carts_and_customers (id, name, class, level) VALUES (" + str(unique_cart_id) + ", " + new_cart.customer_name + ", " + new_cart.character_class + ", " + str(new_cart.level) + ")"))
     return {"cart_id": unique_cart_id}
 
 
@@ -100,9 +102,13 @@ ids_and_carts = {}
 def set_item_quantity(cart_id: int, item_sku: str, cart_item: CartItem):
     global ids_and_carts
     ids_and_carts.update({cart_id: [cart_item.quantity, item_sku]})
+
+
+    with db.engine.begin() as connection:
+        connection.execute(sqlalchemy.text("INSERT INTO carts_and_items (id, quantity, sku) VALUES (" + str(cart_id) + ", " + str(cart_item.quantity) + ", " + item_sku + ")"))
     return "OK"
 
-# payment is not amt of gold apparently
+# payment is not amount of gold apparently
 class CartCheckout(BaseModel):
     payment: str
 
@@ -110,7 +116,25 @@ class CartCheckout(BaseModel):
 def checkout(cart_id: int, cart_checkout: CartCheckout):
     """ """
     with db.engine.begin() as connection:
-        cur_gold = connection.execute(sqlalchemy.text("SELECT gold FROM global_inventory")).scalar_one()
+
+        # Get quantity and sku using cart_id in carts_and_items
+        purchase_info = connection.execute(sqlalchemy.text("SELECT * FROM carts_and_items WHERE id = " + str(cart_id))).all()
+
+        # Get item info for payment using sku in potion_stock
+        item_info = connection.execute(sqlalchemy.text("SELECT * FROM potion_stock WHERE sku = " + purchase_info[2])).all()
+
+        # Update gold
+        connection.execute(sqlalchemy.text("UPDATE extra_resources SET gold = " + "extra_resources.gold + " + str(purchase_info[1] * item_info[7])))
+
+        # Update stock
+        connection.execute(sqlalchemy.text("UPDATE potion_stock SET quantity = potion_stock.quantity - " + str(purchase_info[1]) + " WHERE sku = " + item_info[6]))
+
+        # Return purhcase info
+        return {"total_potions_bought": purchase_info[1], "total_gold_paid": purchase_info[1] * item_info[7]}
+
+
+
+
         if ids_and_carts.get(cart_id)[1] == "RED_POTION_0":
             connection.execute(sqlalchemy.text("UPDATE global_inventory SET gold = " + str(cur_gold + 35 * ids_and_carts.get(cart_id)[0])))
             cur_red = connection.execute(sqlalchemy.text("SELECT num_red_potions FROM global_inventory")).scalar_one()

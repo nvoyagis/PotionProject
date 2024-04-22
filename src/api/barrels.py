@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from src.api import auth
 import sqlalchemy
 from src import database as db
+import random
 
 router = APIRouter(
     prefix="/barrels",
@@ -24,11 +25,7 @@ def post_deliver_barrels(barrels_delivered: list[Barrel], order_id: int):
     """ """
     print(f"barrels delievered: {barrels_delivered} order_id: {order_id}")
 
-    with db.engine.begin() as connection:
-        red_ml = connection.execute(sqlalchemy.text("SELECT num_red_ml FROM global_inventory")).scalar_one()
-        green_ml = connection.execute(sqlalchemy.text("SELECT num_green_ml FROM global_inventory")).scalar_one()
-        blue_ml = connection.execute(sqlalchemy.text("SELECT num_blue_ml FROM global_inventory")).scalar_one()
-        cost = 0
+    cost = 0
 
     # Add RBG ml & find total price. Use only 1 barrel b.c. only 1 type of barrel is purchased at a time.
     for barrel in barrels_delivered:
@@ -46,13 +43,10 @@ def post_deliver_barrels(barrels_delivered: list[Barrel], order_id: int):
 
     # Set new amount of gold & RGB ml
     with db.engine.begin() as connection:
-        cur_gold = connection.execute(sqlalchemy.text("SELECT gold FROM global_inventory")).scalar_one()
-        cur_gold -= cost
-
-        connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_red_ml = " + str(red_ml)))
-        connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_green_ml = " + str(green_ml)))
-        connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_blue_ml = " + str(blue_ml)))
-        connection.execute(sqlalchemy.text("UPDATE global_inventory SET gold = " + str(cur_gold)))
+        connection.execute(sqlalchemy.text("UPDATE resources SET red_ml = " + "resources.red_ml - " + str(red_ml)))
+        connection.execute(sqlalchemy.text("UPDATE resources SET green_ml = " + "resources.green_ml - " + str(green_ml)))
+        connection.execute(sqlalchemy.text("UPDATE resources SET blue_ml = " + "resources.blue_ml - " + str(blue_ml)))
+        connection.execute(sqlalchemy.text("UPDATE extra_resources SET gold = " + "extra_resources.gold + " + str(cost)))
 
     return "OK"
 
@@ -65,26 +59,25 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
 
     # Purchase a barrel if the number of green potions is less than 10 and it can be afforded
     with db.engine.begin() as connection:
-        num_red_potions = connection.execute(sqlalchemy.text("SELECT num_red_potions FROM global_inventory")).scalar_one()
-        num_green_potions = connection.execute(sqlalchemy.text("SELECT num_green_potions FROM global_inventory")).scalar_one()
-        num_blue_potions = connection.execute(sqlalchemy.text("SELECT num_blue_potions FROM global_inventory")).scalar_one()
+
         for barrel in wholesale_catalog:
-            gold = connection.execute(sqlalchemy.text("SELECT gold FROM global_inventory")).scalar_one()
-            if barrel.price <= gold and num_red_potions < 10 and barrel.potion_type == [1, 0, 0, 0]: 
+            gold = connection.execute(sqlalchemy.text("SELECT gold FROM extra_resources")).scalar_one()
+            random = random.random()
+            if barrel.price <= gold and random < 0.5 and barrel.potion_type == [1, 0, 0, 0]: 
                 return [
                 {
                     "sku": barrel.sku,
                     "quantity": 1
                 }
                 ]
-            elif barrel.price <= gold and num_green_potions < 10 and barrel.potion_type == [0, 1, 0, 0]: 
+            elif barrel.price <= gold and random < 0.5 and barrel.potion_type == [0, 1, 0, 0]: 
                 return [
                 {
                     "sku": barrel.sku,
                     "quantity": 1
                 }
                 ]
-            elif barrel.price <= gold and num_blue_potions < 10 and barrel.potion_type == [0, 0, 1, 0]: 
+            elif barrel.price <= gold and random < 0.5 and barrel.potion_type == [0, 0, 1, 0]: 
                 return [
                 {
                     "sku": barrel.sku,
