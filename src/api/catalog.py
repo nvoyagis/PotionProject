@@ -16,12 +16,13 @@ def get_catalog():
         
         # Get data from CursorResult
         for row in potion_info:
-            item_list.append({
-                "sku": row.sku,
-                "name": row.name,
-                "quantity": row.quantity,
-                "price": row.price,
-                "potion_type": row.type
-            })
+            if row.quantity != 0:
+                item_list.append({
+                    "sku": row.sku,
+                    "name": row.name,
+                    "quantity": row.quantity,
+                    "price": row.price,
+                    "potion_type": row.type
+                })
             
         return item_list
