@@ -62,22 +62,22 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
 
         for barrel in wholesale_catalog:
             gold = connection.execute(sqlalchemy.text("SELECT gold FROM extra_resources")).scalar_one()
-            random = random.random()
-            if barrel.price <= gold and random < 0.5 and barrel.potion_type == [1, 0, 0, 0]: 
+            r = random.randint(0,2)
+            if barrel.price <= gold and r == 0 and barrel.potion_type == [1, 0, 0, 0]: 
                 return [
                 {
                     "sku": barrel.sku,
                     "quantity": 1
                 }
                 ]
-            elif barrel.price <= gold and random < 0.5 and barrel.potion_type == [0, 1, 0, 0]: 
+            elif barrel.price <= gold and r == 1 and barrel.potion_type == [0, 1, 0, 0]: 
                 return [
                 {
                     "sku": barrel.sku,
                     "quantity": 1
                 }
                 ]
-            elif barrel.price <= gold and random < 0.5 and barrel.potion_type == [0, 0, 1, 0]: 
+            elif barrel.price <= gold and r == 2 and barrel.potion_type == [0, 0, 1, 0]: 
                 return [
                 {
                     "sku": barrel.sku,
