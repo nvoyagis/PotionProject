@@ -127,22 +127,3 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
 
         # Return purhcase info
         return {"total_potions_bought": purchase_info[1], "total_gold_paid": purchase_info[1] * item_info[7]}
-
-
-
-
-        if ids_and_carts.get(cart_id)[1] == "RED_POTION_0":
-            connection.execute(sqlalchemy.text("UPDATE global_inventory SET gold = " + str(cur_gold + 35 * ids_and_carts.get(cart_id)[0])))
-            cur_red = connection.execute(sqlalchemy.text("SELECT num_red_potions FROM global_inventory")).scalar_one()
-            connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_red_potions = " + str(cur_red - ids_and_carts.get(cart_id)[0])))
-            return {"total_potions_bought": ids_and_carts.get(cart_id)[0], "total_gold_paid": 35 * ids_and_carts.get(cart_id)[0]}
-        elif ids_and_carts.get(cart_id)[1] == "GREEN_POTION_0":
-            connection.execute(sqlalchemy.text("UPDATE global_inventory SET gold = " + str(cur_gold + 30 * ids_and_carts.get(cart_id)[0])))
-            cur_green = connection.execute(sqlalchemy.text("SELECT num_green_potions FROM global_inventory")).scalar_one()
-            connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_green_potions = " + str(cur_green - ids_and_carts.get(cart_id)[0])))
-            return {"total_potions_bought": ids_and_carts.get(cart_id)[0], "total_gold_paid": 30 * ids_and_carts.get(cart_id)[0]}
-        elif ids_and_carts.get(cart_id)[1] == "BLUE_POTION_0":
-            connection.execute(sqlalchemy.text("UPDATE global_inventory SET gold = " + str(cur_gold + 28 * ids_and_carts.get(cart_id)[0])))
-            cur_blue = connection.execute(sqlalchemy.text("SELECT num_blue_potions FROM global_inventory")).scalar_one()
-            connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_blue_potions = " + str(cur_blue - ids_and_carts.get(cart_id)[0])))
-            return {"total_potions_bought": ids_and_carts.get(cart_id)[0], "total_gold_paid": 28 * ids_and_carts.get(cart_id)[0]}
