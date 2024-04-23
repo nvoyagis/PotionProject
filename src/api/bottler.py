@@ -80,8 +80,8 @@ def get_bottle_plan():
                 "potion_type": [50, 50, 0, 0],
                 "quantity": 1
             })
-            colors[50] -= 50
-            colors[50] -= 50
+            colors[0] -= 50
+            colors[1] -= 50
 
         if(colors[1] >= 50 and colors[2] >= 50):
             plan.append({
