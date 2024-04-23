@@ -26,6 +26,9 @@ def post_deliver_barrels(barrels_delivered: list[Barrel], order_id: int):
     print(f"barrels delievered: {barrels_delivered} order_id: {order_id}")
 
     cost = 0
+    red_ml = 0
+    green_ml = 0
+    blue_ml = 0
 
     # Add RBG ml & find total price. Use only 1 barrel b.c. only 1 type of barrel is purchased at a time.
     for barrel in barrels_delivered:
