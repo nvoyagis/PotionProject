@@ -24,81 +24,71 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory], order_id: int
             # Remove ml and add potions
             if potion.potion_type == [100, 0, 0, 0]:
                 red_ml = potion.quantity * 100
-                cur_red_ml = connection.execute(sqlalchemy.text("SELECT num_red_ml FROM resources")).scalar_one()
-                connection.execute(sqlalchemy.text("UPDATE resources SET resources = " + str(cur_red_ml - red_ml)))
+                cur_red_ml = connection.execute(sqlalchemy.text("SELECT red_ml FROM resources")).scalar_one()
+                connection.execute(sqlalchemy.text("UPDATE resources SET red_ml = " + str(cur_red_ml - red_ml)))
 
-                cur_red_quantity = connection.execute(sqlalchemy.text("SELECT num_red_potions FROM resources")).scalar_one()
+                cur_red_quantity = connection.execute(sqlalchemy.text("SELECT quantity FROM potion_stock WHERE id = 1")).scalar_one()
                 cur_red_quantity += potion.quantity
-                connection.execute(sqlalchemy.text("UPDATE resources SET resources = " + str(cur_red_quantity)))
+                connection.execute(sqlalchemy.text("UPDATE potion_stock SET quantity = " + str(cur_red_quantity) + " WHERE id = 1"))
+
 
             elif potion.potion_type == [0, 100, 0, 0]:
                 green_ml = potion.quantity * 100
-                cur_green_ml = connection.execute(sqlalchemy.text("SELECT num_green_ml FROM resources")).scalar_one()
-                connection.execute(sqlalchemy.text("UPDATE resources SET num_green_ml = " + str(cur_green_ml - green_ml)))
+                cur_green_ml = connection.execute(sqlalchemy.text("SELECT green_ml FROM resources")).scalar_one()
+                connection.execute(sqlalchemy.text("UPDATE resources SET green_ml = " + str(cur_green_ml - green_ml)))
 
-                cur_green_quantity = connection.execute(sqlalchemy.text("SELECT num_green_potions FROM resources")).scalar_one()
+                cur_green_quantity = connection.execute(sqlalchemy.text("SELECT quantity FROM potion_stock WHERE id = 2")).scalar_one()
                 cur_green_quantity += potion.quantity
-                connection.execute(sqlalchemy.text("UPDATE resources SET num_green_potions = " + str(cur_green_quantity)))
+                connection.execute(sqlalchemy.text("UPDATE potion_stock SET quantity = " + str(cur_green_quantity) + " WHERE id = 2"))
+
 
             elif potion.potion_type == [0, 0, 100, 0]:
                 blue_ml = potion.quantity * 100
-                cur_blue_ml = connection.execute(sqlalchemy.text("SELECT num_blue_ml FROM resources")).scalar_one()
-                connection.execute(sqlalchemy.text("UPDATE resources SET num_blue_ml = " + str(cur_blue_ml - blue_ml)))
+                cur_blue_ml = connection.execute(sqlalchemy.text("SELECT blue_ml FROM resources")).scalar_one()
+                connection.execute(sqlalchemy.text("UPDATE resources SET blue_ml = " + str(cur_blue_ml - blue_ml)))
 
-                cur_blue_quantity = connection.execute(sqlalchemy.text("SELECT num_blue_potions FROM resources")).scalar_one()
+                cur_blue_quantity = connection.execute(sqlalchemy.text("SELECT quantity FROM potion_stock WHERE id = 3")).scalar_one()
                 cur_blue_quantity += potion.quantity
-                connection.execute(sqlalchemy.text("UPDATE resources SET num_blue_potions = " + str(cur_blue_quantity)))
+                connection.execute(sqlalchemy.text("UPDATE potion_stock SET quantity = " + str(cur_blue_quantity) + " WHERE id = 3"))
 
             elif potion.potion_type == [50, 50, 0, 0]:
                 red_ml = potion.quantity * 50
-                cur_red_ml = connection.execute(sqlalchemy.text("SELECT num_red_ml FROM resources")).scalar_one()
-                connection.execute(sqlalchemy.text("UPDATE resources SET resources = " + str(cur_red_ml - red_ml)))
-
-                cur_red_quantity = connection.execute(sqlalchemy.text("SELECT num_red_potions FROM resources")).scalar_one()
-                cur_red_quantity += potion.quantity
-                connection.execute(sqlalchemy.text("UPDATE resources SET resources = " + str(cur_red_quantity)))
+                cur_red_ml = connection.execute(sqlalchemy.text("SELECT red_ml FROM resources")).scalar_one()
+                connection.execute(sqlalchemy.text("UPDATE resources SET red_ml = " + str(cur_red_ml - red_ml)))
 
                 green_ml = potion.quantity * 50
-                cur_green_ml = connection.execute(sqlalchemy.text("SELECT num_green_ml FROM resources")).scalar_one()
-                connection.execute(sqlalchemy.text("UPDATE resources SET num_green_ml = " + str(cur_green_ml - green_ml)))
+                cur_green_ml = connection.execute(sqlalchemy.text("SELECT green_ml FROM resources")).scalar_one()
+                connection.execute(sqlalchemy.text("UPDATE resources SET green_ml = " + str(cur_green_ml - green_ml)))
 
-                cur_green_quantity = connection.execute(sqlalchemy.text("SELECT num_green_potions FROM resources")).scalar_one()
-                cur_green_quantity += potion.quantity
-                connection.execute(sqlalchemy.text("UPDATE resources SET num_green_potions = " + str(cur_green_quantity)))
+                cur_brown_quantity = connection.execute(sqlalchemy.text("SELECT quantity FROM potion_stock WHERE id = 4")).scalar_one()
+                cur_brown_quantity += potion.quantity
+                connection.execute(sqlalchemy.text("UPDATE potion_stock SET quantity = " + str(cur_brown_quantity) + " WHERE id = 4"))
 
             elif potion.potion_type == [0, 50, 50, 0]:
                 green_ml = potion.quantity * 50
-                cur_green_ml = connection.execute(sqlalchemy.text("SELECT num_green_ml FROM resources")).scalar_one()
-                connection.execute(sqlalchemy.text("UPDATE resources SET num_green_ml = " + str(cur_green_ml - green_ml)))
-
-                cur_green_quantity = connection.execute(sqlalchemy.text("SELECT num_green_potions FROM resources")).scalar_one()
-                cur_green_quantity += potion.quantity
-                connection.execute(sqlalchemy.text("UPDATE resources SET num_green_potions = " + str(cur_green_quantity)))
+                cur_green_ml = connection.execute(sqlalchemy.text("SELECT green_ml FROM resources")).scalar_one()
+                connection.execute(sqlalchemy.text("UPDATE resources SET green_ml = " + str(cur_green_ml - green_ml)))
 
                 blue_ml = potion.quantity * 50
-                cur_blue_ml = connection.execute(sqlalchemy.text("SELECT num_blue_ml FROM resources")).scalar_one()
-                connection.execute(sqlalchemy.text("UPDATE resources SET num_blue_ml = " + str(cur_blue_ml - blue_ml)))
+                cur_blue_ml = connection.execute(sqlalchemy.text("SELECT blue_ml FROM resources")).scalar_one()
+                connection.execute(sqlalchemy.text("UPDATE resources SET blue_ml = " + str(cur_blue_ml - blue_ml)))
 
-                cur_blue_quantity = connection.execute(sqlalchemy.text("SELECT num_blue_potions FROM resources")).scalar_one()
-                cur_blue_quantity += potion.quantity
-                connection.execute(sqlalchemy.text("UPDATE resources SET num_blue_potions = " + str(cur_blue_quantity)))
+                cur_teal_quantity = connection.execute(sqlalchemy.text("SELECT quantity FROM potion_stock WHERE id = 5")).scalar_one()
+                cur_teal_quantity += potion.quantity
+                connection.execute(sqlalchemy.text("UPDATE potion_stock SET quantity = " + str(cur_teal_quantity) + " WHERE id = 5"))
 
             elif potion.potion_type == [50, 0, 50, 0]:
                 red_ml = potion.quantity * 50
-                cur_red_ml = connection.execute(sqlalchemy.text("SELECT num_red_ml FROM resources")).scalar_one()
-                connection.execute(sqlalchemy.text("UPDATE resources SET resources = " + str(cur_red_ml - red_ml)))
-
-                cur_red_quantity = connection.execute(sqlalchemy.text("SELECT num_red_potions FROM resources")).scalar_one()
-                cur_red_quantity += potion.quantity
-                connection.execute(sqlalchemy.text("UPDATE resources SET resources = " + str(cur_red_quantity)))
+                cur_red_ml = connection.execute(sqlalchemy.text("SELECT red_ml FROM resources")).scalar_one()
+                connection.execute(sqlalchemy.text("UPDATE resources SET red_ml = " + str(cur_red_ml - red_ml)))
 
                 blue_ml = potion.quantity * 50
-                cur_blue_ml = connection.execute(sqlalchemy.text("SELECT num_blue_ml FROM resources")).scalar_one()
-                connection.execute(sqlalchemy.text("UPDATE resources SET num_blue_ml = " + str(cur_blue_ml - blue_ml)))
+                cur_blue_ml = connection.execute(sqlalchemy.text("SELECT blue_ml FROM resources")).scalar_one()
+                connection.execute(sqlalchemy.text("UPDATE resources SET blue_ml = " + str(cur_blue_ml - blue_ml)))
 
-                cur_blue_quantity = connection.execute(sqlalchemy.text("SELECT num_blue_potions FROM resources")).scalar_one()
-                cur_blue_quantity += potion.quantity
-                connection.execute(sqlalchemy.text("UPDATE resources SET num_blue_potions = " + str(cur_blue_quantity)))
+                cur_purple_quantity = connection.execute(sqlalchemy.text("SELECT quantity FROM potion_stock WHERE id = 6")).scalar_one()
+                cur_purple_quantity += potion.quantity
+                connection.execute(sqlalchemy.text("UPDATE potion_stock SET quantity = " + str(cur_purple_quantity) + " WHERE id = 6"))
 
     print(f"potions delivered: {potions_delivered} order_id: {order_id}")
 
