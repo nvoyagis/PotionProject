@@ -43,10 +43,10 @@ def post_deliver_barrels(barrels_delivered: list[Barrel], order_id: int):
 
     # Set new amount of gold & RGB ml
     with db.engine.begin() as connection:
-        connection.execute(sqlalchemy.text("UPDATE resources SET red_ml = " + "resources.red_ml - " + str(red_ml)))
-        connection.execute(sqlalchemy.text("UPDATE resources SET green_ml = " + "resources.green_ml - " + str(green_ml)))
-        connection.execute(sqlalchemy.text("UPDATE resources SET blue_ml = " + "resources.blue_ml - " + str(blue_ml)))
-        connection.execute(sqlalchemy.text("UPDATE extra_resources SET gold = " + "extra_resources.gold + " + str(cost)))
+        connection.execute(sqlalchemy.text("UPDATE resources SET red_ml = " + "resources.red_ml + " + str(red_ml)))
+        connection.execute(sqlalchemy.text("UPDATE resources SET green_ml = " + "resources.green_ml + " + str(green_ml)))
+        connection.execute(sqlalchemy.text("UPDATE resources SET blue_ml = " + "resources.blue_ml + " + str(blue_ml)))
+        connection.execute(sqlalchemy.text("UPDATE extra_resources SET gold = " + "extra_resources.gold - " + str(cost)))
 
     return "OK"
 
