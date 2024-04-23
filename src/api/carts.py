@@ -83,15 +83,12 @@ def post_visits(visit_id: int, customers: list[Customer]):
 
     return "OK"
 
-unique_cart_id = 0
 @router.post("/")
 def create_cart(new_cart: Customer):
     """ """
-    global unique_cart_id
-    unique_cart_id += 1
     with db.engine.begin() as connection:
-        connection.execute(sqlalchemy.text("INSERT INTO carts_and_customers (id, name, class, level) VALUES (" + str(unique_cart_id) + ", " + new_cart.customer_name + ", " + new_cart.character_class + ", " + str(new_cart.level) + ")"))
-    return {"cart_id": unique_cart_id}
+        id = connection.execute(sqlalchemy.text("INSERT INTO carts_and_customers (name, class, level) VALUES (" + new_cart.customer_name + ", " + new_cart.character_class + ", " + str(new_cart.level) + ") RETURNING id)"))
+    return {"cart_id": id}
 
 
 class CartItem(BaseModel):
@@ -102,7 +99,6 @@ ids_and_carts = {}
 def set_item_quantity(cart_id: int, item_sku: str, cart_item: CartItem):
     global ids_and_carts
     ids_and_carts.update({cart_id: [cart_item.quantity, item_sku]})
-
 
     with db.engine.begin() as connection:
         connection.execute(sqlalchemy.text("INSERT INTO carts_and_items (id, quantity, sku) VALUES (" + str(cart_id) + ", " + str(cart_item.quantity) + ", " + item_sku + ")"))
