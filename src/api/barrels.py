@@ -60,32 +60,28 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
     """ """
     print(wholesale_catalog)
 
-    # Purchase a barrel if the number of green potions is less than 10 and it can be afforded
+    # Purchase barrels
     with db.engine.begin() as connection:
-
+        json = []
         for barrel in wholesale_catalog:
             gold = connection.execute(sqlalchemy.text("SELECT gold FROM extra_resources")).scalar_one()
             r = random.randint(0,2)
             if barrel.price <= gold and r == 0 and barrel.potion_type == [1, 0, 0, 0]: 
-                return [
-                {
+                json.append({
                     "sku": barrel.sku,
                     "quantity": 1
-                }
-                ]
+                })
+                
             elif barrel.price <= gold and r == 1 and barrel.potion_type == [0, 1, 0, 0]: 
-                return [
-                {
+                json.append({
                     "sku": barrel.sku,
                     "quantity": 1
-                }
-                ]
-            elif barrel.price <= gold and r == 2 and barrel.potion_type == [0, 0, 1, 0]: 
-                return [
-                {
-                    "sku": barrel.sku,
-                    "quantity": 1
-                }
-                ]
+                })
 
-    return []
+            elif barrel.price <= gold and r == 2 and barrel.potion_type == [0, 0, 1, 0]: 
+                json.append({
+                    "sku": barrel.sku,
+                    "quantity": 1
+                })
+
+    return json
