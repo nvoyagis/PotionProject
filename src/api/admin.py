@@ -21,8 +21,8 @@ def reset():
         connection.execute(sqlalchemy.text("UPDATE resources SET green_ml = 0"))
         connection.execute(sqlalchemy.text("UPDATE resources SET blue_ml = 0"))
         connection.execute(sqlalchemy.text("UPDATE potion_stock SET quantity = 0"))
-        connection.execute(sqlalchemy.text("UPDATE extra_resources SET gold = 100"))
-        connection.execute(sqlalchemy.text("UPDATE extra_resources SET dark_ml = 0"))
+        connection.execute(sqlalchemy.text("UPDATE resources SET gold = 100"))
+        connection.execute(sqlalchemy.text("UPDATE resources SET dark_ml = 0"))
         connection.execute(sqlalchemy.text("DELETE FROM carts_and_customers"))
         connection.execute(sqlalchemy.text("DELETE FROM carts_and_items"))
 
