@@ -21,6 +21,7 @@ def get_inventory():
         red_ml, green_ml, blue_ml = connection.execute(sqlalchemy.text("SELECT red_ml, green_ml, blue_ml FROM resources")).first()
         total_ml = red_ml + green_ml + blue_ml
         num_of_gold = connection.execute(sqlalchemy.text("SELECT gold FROM resources")).scalar_one()
+        print(num_of_gold+ "," +num_of_pots+ "," +total_ml)
     return {"number_of_potions": num_of_pots, "ml_in_barrels": total_ml, "gold": num_of_gold}
 
 # Gets called once a day
