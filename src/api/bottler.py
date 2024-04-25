@@ -107,7 +107,7 @@ def get_bottle_plan():
         # Make an array that contains tuples for each color (in ml) that I have and then another array for the types of potions being sold
         red_ml, green_ml, blue_ml = connection.execute(sqlalchemy.text("SELECT red_ml, green_ml, blue_ml FROM resources")).first()
         # Add different potions to the plan
-        while(red_ml >= 50 and green_ml >= 50 and blue_ml >= 50):
+        while(red_ml >= 50 or green_ml >= 50 or blue_ml >= 50):
             if(red_ml >= 50 and green_ml >= 50):
                 plan.append({
                     "potion_type": [50, 50, 0, 0],
