@@ -63,22 +63,25 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
     # Purchase barrels
     with db.engine.begin() as connection:
         json = []
+        gold = connection.execute(sqlalchemy.text("SELECT gold FROM resources")).scalar_one()
         for barrel in wholesale_catalog:
-            gold = connection.execute(sqlalchemy.text("SELECT gold FROM resources")).scalar_one()
             r = random.randint(0,2)
             if barrel.price <= gold and r == 0 and barrel.potion_type == [1, 0, 0, 0]: 
+                gold -= barrel.price
                 json.append({
                     "sku": barrel.sku,
                     "quantity": 1
                 })
                 
             elif barrel.price <= gold and r == 1 and barrel.potion_type == [0, 1, 0, 0]: 
+                gold -= barrel.price
                 json.append({
                     "sku": barrel.sku,
                     "quantity": 1
                 })
 
             elif barrel.price <= gold and r == 2 and barrel.potion_type == [0, 0, 1, 0]: 
+                gold -= barrel.price
                 json.append({
                     "sku": barrel.sku,
                     "quantity": 1
