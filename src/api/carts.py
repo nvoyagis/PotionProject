@@ -112,16 +112,16 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
     with db.engine.begin() as connection:
 
         # Get quantity and sku using cart_id in carts_and_items
-        order_quantity, order_sku = connection.execute(sqlalchemy.text("SELECT quantity, sku FROM carts_and_items WHERE id = " + str(cart_id))).all()
+        order_quantity, order_sku = connection.execute(sqlalchemy.text("SELECT quantity, sku FROM carts_and_items WHERE id = " + str(cart_id))).first()
 
         # Get item info for payment using sku in potion_stock
-        potion_quantity, potion_price = connection.execute(sqlalchemy.text("SELECT quantity, price FROM potion_stock WHERE sku = " + order_sku)).all()
+        potion_price = connection.execute(sqlalchemy.text("SELECT price FROM potion_stock WHERE sku = '" + order_sku+"'")).first()[0]
 
         # Update gold
-        connection.execute(sqlalchemy.text("UPDATE resources SET gold = resources.gold + " + str(order_quantity * potion_price)))
+        connection.execute(sqlalchemy.text("UPDATE resources SET gold = resources.gold + '" + str(order_quantity * potion_price) + "'"))
 
         # Update stock
-        connection.execute(sqlalchemy.text("UPDATE potion_stock SET quantity = potion_stock.quantity - " + str(order_quantity) + " WHERE sku = " + order_sku))
+        connection.execute(sqlalchemy.text("UPDATE potion_stock SET quantity = potion_stock.quantity - " + str(order_quantity) + " WHERE sku = '" + order_sku + "'"))
 
         # Return purhcase info
         return {"total_potions_bought": order_quantity, "total_gold_paid": order_quantity * potion_price}
