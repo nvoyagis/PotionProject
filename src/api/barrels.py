@@ -24,33 +24,27 @@ class Barrel(BaseModel):
 def post_deliver_barrels(barrels_delivered: list[Barrel], order_id: int):
     """ """
     print(f"barrels delievered: {barrels_delivered} order_id: {order_id}")
-
-    cost = 0
-    red_ml = 0
-    green_ml = 0
-    blue_ml = 0
-
-    # Add RBG ml & find total price. Use only 1 barrel b.c. only 1 type of barrel is purchased at a time.
-    for barrel in barrels_delivered:
-        if barrel.potion_type == [1, 0, 0 , 0]:
-            red_ml += barrel.ml_per_barrel
-        elif barrel.potion_type == [0, 1, 0 , 0]:
-            green_ml += barrel.ml_per_barrel
-        elif barrel.potion_type == [0, 0, 1 , 0]:
-            blue_ml += barrel.ml_per_barrel
-        # Defensive programming! (helps identify bugs)
-        else:
-            raise Exception("Invalid potion type")
-
-        cost += barrel.price 
-
-    # Set new amount of gold & RGB ml
     with db.engine.begin() as connection:
-        connection.execute(sqlalchemy.text("UPDATE resources SET red_ml = " + "resources.red_ml + " + str(red_ml)))
-        connection.execute(sqlalchemy.text("UPDATE resources SET green_ml = " + "resources.green_ml + " + str(green_ml)))
-        connection.execute(sqlalchemy.text("UPDATE resources SET blue_ml = " + "resources.blue_ml + " + str(blue_ml)))
-        connection.execute(sqlalchemy.text("UPDATE resources SET gold = " + "resources.gold - " + str(cost)))
+        # Add ledgers for ml and gold spent
+        for barrel in barrels_delivered:
+            if barrel.potion_type == [1, 0, 0 , 0]:
+                connection.execute(sqlalchemy.text("INSERT INTO resources_ledgers (red_change, green_change, blue_change, gold_change) VALUES (:red, :green, :blue, :gold)")[{"red": barrel.ml_per_barrel, "blue": 0, "green": 0, "gold": -barrel.price}])
+            elif barrel.potion_type == [0, 1, 0 , 0]:
+                connection.execute(sqlalchemy.text("INSERT INTO resources_ledgers (red_change, green_change, blue_change, gold_change) VALUES (:red, :green, :blue, :gold)")[{"red": 0, "blue": barrel.ml_per_barrel, "green": 0, "gold": -barrel.price}])
+            elif barrel.potion_type == [0, 0, 1 , 0]:
+                connection.execute(sqlalchemy.text("INSERT INTO resources_ledgers (red_change, green_change, blue_change, gold_change) VALUES (:red, :green, :blue, :gold)")[{"red": 0, "blue": 0, "green": barrel.ml_per_barrel, "gold": -barrel.price}])
 
+            # Defensive programming! (helps identify bugs)
+            else:
+                raise Exception("Invalid potion type")
+
+
+        # Combine ledgers... Must add them to resources table later
+        with db.engine.begin() as connection:
+            connection.execute(sqlalchemy.text("INSERT INTO resources_ledgers (red_change, green_change, blue_change, gold_change) VALUES (:red, :green, :blue, :gold)")[{"red": red_ml, "blue": blue_ml, "green": green_ml, "gold": cost}])
+            connection.execute(sqlalchemy.text("SELECT SUM(red_change) AS red_ml FROM resources_ledgers WHERE blue_change = 0, green_change = 0"))
+            connection.execute(sqlalchemy.text("SELECT SUM(green_change) AS green_ml FROM resources_ledgers WHERE red_change = 0, blue_change = 0"))
+            connection.execute(sqlalchemy.text("SELECT SUM(blue_change) AS blue_ml FROM resources_ledgers WHERE red_change = 0, green_change = 0"))
     return "OK"
 
 # Gets called once a day, v1
