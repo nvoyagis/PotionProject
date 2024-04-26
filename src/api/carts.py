@@ -113,9 +113,11 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
 
         # Get quantity and sku using cart_id in carts_and_items
         order_quantity, order_sku = connection.execute(sqlalchemy.text("SELECT quantity, sku FROM carts_and_items WHERE id = " + str(cart_id))).first()
+        print(order_sku)
 
         # Get item info for payment using sku in potion_stock
-        potion_price = connection.execute(sqlalchemy.text("SELECT price FROM potion_stock WHERE sku = '" + order_sku+"'")).first()[0]
+        potion_price = connection.execute(sqlalchemy.text("SELECT price FROM potion_stock WHERE sku = :ordersku"), [{"ordersku": order_sku}]).scalar_one()
+        print(potion_price)
 
         # Update gold
         connection.execute(sqlalchemy.text("UPDATE resources SET gold = resources.gold + '" + str(order_quantity * potion_price) + "'"))
