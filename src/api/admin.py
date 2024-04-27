@@ -23,10 +23,10 @@ def reset():
         connection.execute(sqlalchemy.text("UPDATE potion_stock SET quantity = 0"))
         connection.execute(sqlalchemy.text("UPDATE resources SET gold = 100"))
         connection.execute(sqlalchemy.text("UPDATE resources SET dark_ml = 0"))
-        connection.execute(sqlalchemy.text("TRUNCATE carts_and_customers"))
+        connection.execute(sqlalchemy.text("TRUNCATE carts_and_customers CASCADE"))
         connection.execute(sqlalchemy.text("TRUNCATE carts_and_items"))
         connection.execute(sqlalchemy.text("TRUNCATE resource_ledgers"))
-        connection.execute(sqlalchemy.text("TRUNCATE potions_ledgers"))
+        connection.execute(sqlalchemy.text("TRUNCATE potion_ledgers"))
         connection.execute(sqlalchemy.text("TRUNCATE cart_ledgers"))
 
     return "OK"
