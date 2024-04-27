@@ -25,7 +25,7 @@ def post_deliver_barrels(barrels_delivered: list[Barrel], order_id: int):
     """ """
     print(f"barrels delievered: {barrels_delivered} order_id: {order_id}")
     with db.engine.begin() as connection:
-        # Defensive programming! (helps identify bugs)
+        # Defensive programming (helps identify bugs)
         for barrel in barrels_delivered:
             if barrel.potion_type != [1, 0, 0, 0] and barrel.potion_type != [0, 1, 0, 0] and barrel.potion_type != [0, 0, 1, 0]:
                 raise Exception("Invalid potion type")
@@ -37,7 +37,7 @@ def post_deliver_barrels(barrels_delivered: list[Barrel], order_id: int):
             connection.execute(sqlalchemy.text("UPDATE resources SET green_ml = (SELECT SUM(green_change) FROM resource_ledgers) + resources.green_ml"))
             connection.execute(sqlalchemy.text("UPDATE resources SET blue_ml = (SELECT SUM(blue_change) FROM resource_ledgers) + resources.blue_ml"))
             connection.execute(sqlalchemy.text("UPDATE resources SET gold = (SELECT SUM(gold_change) FROM resource_ledgers) + resources.gold"))
-            connection.execute(sqlalchemy.text("TRUNCATE resources"))
+            connection.execute(sqlalchemy.text("TRUNCATE resource_ledgers"))
 
 
 
