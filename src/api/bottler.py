@@ -19,81 +19,37 @@ class PotionInventory(BaseModel):
 def post_deliver_bottles(potions_delivered: list[PotionInventory], order_id: int):
     """ """
     with db.engine.begin() as connection:
-        for potion in potions_delivered:
+        red_sum = connection.execute(sqlalchemy.text("SELECT SUM(red_change) FROM potion_ledgers")).scalar_one()
+        red_cur = connection.execute(sqlalchemy.text("SELECT quantity FROM potion_stock where id = 1")).scalar_one()
+        connection.execute(sqlalchemy.text("UPDATE potion_stock SET quantity = :new_red WHERE id = 1"), [{"new_red": red_sum + red_cur}])
 
-            # Remove ml and add potions
-            if potion.potion_type == [100, 0, 0, 0]:
-                red_ml = potion.quantity * 100
-                cur_red_ml = connection.execute(sqlalchemy.text("SELECT red_ml FROM resources")).scalar_one()
-                connection.execute(sqlalchemy.text("UPDATE resources SET red_ml = " + str(cur_red_ml - red_ml)))
+        green_sum = connection.execute(sqlalchemy.text("SELECT SUM(green_change) FROM potion_ledgers")).scalar_one()
+        green_cur = connection.execute(sqlalchemy.text("SELECT quantity FROM potion_stock where id = 2")).scalar_one()
+        connection.execute(sqlalchemy.text("UPDATE potion_stock SET quantity = :new_green WHERE id = 2"), [{"new_green": green_sum + green_cur}])
 
-                cur_red_quantity = connection.execute(sqlalchemy.text("SELECT quantity FROM potion_stock WHERE id = 1")).scalar_one()
-                cur_red_quantity += potion.quantity
-                connection.execute(sqlalchemy.text("UPDATE potion_stock SET quantity = " + str(cur_red_quantity) + " WHERE id = 1"))
+        blue_sum = connection.execute(sqlalchemy.text("SELECT SUM(blue_change) FROM potion_ledgers")).scalar_one()
+        blue_cur = connection.execute(sqlalchemy.text("SELECT quantity FROM potion_stock where id = 3")).scalar_one()
+        connection.execute(sqlalchemy.text("UPDATE potion_stock SET quantity = :new_blue WHERE id = 3"), [{"new_blue": blue_sum + blue_cur}])
 
+        brown_sum = connection.execute(sqlalchemy.text("SELECT SUM(brown_change) FROM potion_ledgers")).scalar_one()
+        brown_cur = connection.execute(sqlalchemy.text("SELECT quantity FROM potion_stock where id = 4")).scalar_one()
+        connection.execute(sqlalchemy.text("UPDATE potion_stock SET quantity = :new_brown WHERE id = 4"), [{"new_brown": brown_sum + brown_cur}])
 
-            elif potion.potion_type == [0, 100, 0, 0]:
-                green_ml = potion.quantity * 100
-                cur_green_ml = connection.execute(sqlalchemy.text("SELECT green_ml FROM resources")).scalar_one()
-                connection.execute(sqlalchemy.text("UPDATE resources SET green_ml = " + str(cur_green_ml - green_ml)))
+        teal_sum = connection.execute(sqlalchemy.text("SELECT SUM(teal_change) FROM potion_ledgers")).scalar_one()
+        teal_cur = connection.execute(sqlalchemy.text("SELECT quantity FROM potion_stock where id = 5")).scalar_one()
+        connection.execute(sqlalchemy.text("UPDATE potion_stock SET quantity = :new_teal WHERE id = 5"), [{"new_teal": teal_sum + teal_cur}])
 
-                cur_green_quantity = connection.execute(sqlalchemy.text("SELECT quantity FROM potion_stock WHERE id = 2")).scalar_one()
-                cur_green_quantity += potion.quantity
-                connection.execute(sqlalchemy.text("UPDATE potion_stock SET quantity = " + str(cur_green_quantity) + " WHERE id = 2"))
+        purple_sum = connection.execute(sqlalchemy.text("SELECT SUM(purple_change) FROM potion_ledgers")).scalar_one()
+        purple_cur = connection.execute(sqlalchemy.text("SELECT quantity FROM potion_stock where id = 6")).scalar_one()
+        connection.execute(sqlalchemy.text("UPDATE potion_stock SET quantity = :new_purple WHERE id = 6"), [{"new_purple": purple_sum + purple_cur}])
 
+        connection.execute(sqlalchemy.text("TRUNCATE potion_ledgers"))
 
-            elif potion.potion_type == [0, 0, 100, 0]:
-                blue_ml = potion.quantity * 100
-                cur_blue_ml = connection.execute(sqlalchemy.text("SELECT blue_ml FROM resources")).scalar_one()
-                connection.execute(sqlalchemy.text("UPDATE resources SET blue_ml = " + str(cur_blue_ml - blue_ml)))
+        print(f"potions delivered: {potions_delivered} order_id: {order_id}")
 
-                cur_blue_quantity = connection.execute(sqlalchemy.text("SELECT quantity FROM potion_stock WHERE id = 3")).scalar_one()
-                cur_blue_quantity += potion.quantity
-                connection.execute(sqlalchemy.text("UPDATE potion_stock SET quantity = " + str(cur_blue_quantity) + " WHERE id = 3"))
-
-            elif potion.potion_type == [50, 50, 0, 0]:
-                red_ml = potion.quantity * 50
-                cur_red_ml = connection.execute(sqlalchemy.text("SELECT red_ml FROM resources")).scalar_one()
-                connection.execute(sqlalchemy.text("UPDATE resources SET red_ml = " + str(cur_red_ml - red_ml)))
-
-                green_ml = potion.quantity * 50
-                cur_green_ml = connection.execute(sqlalchemy.text("SELECT green_ml FROM resources")).scalar_one()
-                connection.execute(sqlalchemy.text("UPDATE resources SET green_ml = " + str(cur_green_ml - green_ml)))
-
-                cur_brown_quantity = connection.execute(sqlalchemy.text("SELECT quantity FROM potion_stock WHERE id = 4")).scalar_one()
-                cur_brown_quantity += potion.quantity
-                connection.execute(sqlalchemy.text("UPDATE potion_stock SET quantity = " + str(cur_brown_quantity) + " WHERE id = 4"))
-
-            elif potion.potion_type == [0, 50, 50, 0]:
-                green_ml = potion.quantity * 50
-                cur_green_ml = connection.execute(sqlalchemy.text("SELECT green_ml FROM resources")).scalar_one()
-                connection.execute(sqlalchemy.text("UPDATE resources SET green_ml = " + str(cur_green_ml - green_ml)))
-
-                blue_ml = potion.quantity * 50
-                cur_blue_ml = connection.execute(sqlalchemy.text("SELECT blue_ml FROM resources")).scalar_one()
-                connection.execute(sqlalchemy.text("UPDATE resources SET blue_ml = " + str(cur_blue_ml - blue_ml)))
-
-                cur_teal_quantity = connection.execute(sqlalchemy.text("SELECT quantity FROM potion_stock WHERE id = 5")).scalar_one()
-                cur_teal_quantity += potion.quantity
-                connection.execute(sqlalchemy.text("UPDATE potion_stock SET quantity = " + str(cur_teal_quantity) + " WHERE id = 5"))
-
-            elif potion.potion_type == [50, 0, 50, 0]:
-                red_ml = potion.quantity * 50
-                cur_red_ml = connection.execute(sqlalchemy.text("SELECT red_ml FROM resources")).scalar_one()
-                connection.execute(sqlalchemy.text("UPDATE resources SET red_ml = " + str(cur_red_ml - red_ml)))
-
-                blue_ml = potion.quantity * 50
-                cur_blue_ml = connection.execute(sqlalchemy.text("SELECT blue_ml FROM resources")).scalar_one()
-                connection.execute(sqlalchemy.text("UPDATE resources SET blue_ml = " + str(cur_blue_ml - blue_ml)))
-
-                cur_purple_quantity = connection.execute(sqlalchemy.text("SELECT quantity FROM potion_stock WHERE id = 6")).scalar_one()
-                cur_purple_quantity += potion.quantity
-                connection.execute(sqlalchemy.text("UPDATE potion_stock SET quantity = " + str(cur_purple_quantity) + " WHERE id = 6"))
-
-    print(f"potions delivered: {potions_delivered} order_id: {order_id}")
-
-    return "OK"
-
+        return "OK"
+    
+    
 @router.post("/plan")
 def get_bottle_plan():
     """
@@ -104,11 +60,11 @@ def get_bottle_plan():
     plan = []
 
     with db.engine.begin() as connection:
-        # Make an array that contains tuples for each color (in ml) that I have and then another array for the types of potions being sold
         red_ml, green_ml, blue_ml = connection.execute(sqlalchemy.text("SELECT red_ml, green_ml, blue_ml FROM resources")).first()
         # Add different potions to the plan
         while(red_ml >= 50 or green_ml >= 50 or blue_ml >= 50):
             if(red_ml >= 50 and green_ml >= 50):
+                connection.execute(sqlalchemy.text("INSERT INTO potion_ledgers (red_change, green_change, blue_change, purple_change, teal_change, brown_change) VALUES (:red, :green, :blue, :purple, :teal, :brown)"), [{"red": 0, "blue": 0, "green": 0, "purple": 0, "teal": 0, "brown": 1}])
                 plan.append({
                     "potion_type": [50, 50, 0, 0],
                     "quantity": 1
@@ -117,6 +73,7 @@ def get_bottle_plan():
                 green_ml -= 50
 
             if(green_ml >= 50 and blue_ml >= 50):
+                connection.execute(sqlalchemy.text("INSERT INTO potion_ledgers (red_change, green_change, blue_change, purple_change, teal_change, brown_change) VALUES (:red, :green, :blue, :purple, :teal, :brown)"), [{"red": 0, "blue": 0, "green": 0, "purple": 0, "teal": 1, "brown": 0}])
                 plan.append({
                     "potion_type": [0, 50, 50, 0],
                     "quantity": 1
@@ -125,6 +82,7 @@ def get_bottle_plan():
                 blue_ml -= 50
                 
             if(red_ml >= 50 and blue_ml >= 50):
+                connection.execute(sqlalchemy.text("INSERT INTO potion_ledgers (red_change, green_change, blue_change, purple_change, teal_change, brown_change) VALUES (:red, :green, :blue, :purple, :teal, :brown)"), [{"red": 0, "blue": 0, "green": 0, "purple": 1, "teal": 0, "brown": 0}])
                 plan.append({
                     "potion_type": [50, 0, 50, 0],
                     "quantity": 1
@@ -133,6 +91,7 @@ def get_bottle_plan():
                 blue_ml -= 50
 
             if(red_ml >= 100):
+                connection.execute(sqlalchemy.text("INSERT INTO potion_ledgers (red_change, green_change, blue_change, purple_change, teal_change, brown_change) VALUES (:red, :green, :blue, :purple, :teal, :brown)"), [{"red": 1, "blue": 0, "green": 0, "purple": 0, "teal": 0, "brown": 0}])
                 plan.append({
                     "potion_type": [100, 0, 0, 0],
                     "quantity": 1
@@ -140,6 +99,7 @@ def get_bottle_plan():
                 red_ml -= 100
 
             if(green_ml >= 100):
+                connection.execute(sqlalchemy.text("INSERT INTO potion_ledgers (red_change, green_change, blue_change, purple_change, teal_change, brown_change) VALUES (:red, :green, :blue, :purple, :teal, :brown)"), [{"red": 0, "blue": 0, "green": 1, "purple": 0, "teal": 0, "brown": 0}])
                 plan.append({
                     "potion_type": [0, 100, 0, 0],
                     "quantity": 1
@@ -147,6 +107,7 @@ def get_bottle_plan():
                 green_ml -= 100
 
             if(blue_ml >= 100):
+                connection.execute(sqlalchemy.text("INSERT INTO potion_ledgers (red_change, green_change, blue_change, purple_change, teal_change, brown_change) VALUES (:red, :green, :blue, :purple, :teal, :brown)"), [{"red": 0, "blue": 1, "green": 0, "purple": 0, "teal": 0, "brown": 0}])
                 plan.append({
                     "potion_type": [0, 0, 100, 0],
                     "quantity": 1

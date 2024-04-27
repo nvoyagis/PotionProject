@@ -100,6 +100,21 @@ def set_item_quantity(cart_id: int, item_sku: str, cart_item: CartItem):
 
     with db.engine.begin() as connection:
         connection.execute(sqlalchemy.text("INSERT INTO carts_and_items (id, quantity, sku) VALUES ('" + str(cart_id) + "', '" + str(cart_item.quantity) + "', '" + item_sku + "')"))
+        potion_price = connection.execute(sqlalchemy.text("SELECT price FROM potion_stock WHERE sku = :ordersku"), [{"ordersku": item_sku}]).scalar_one()
+        price = int(potion_price) * cart_item.quantity
+        if item_sku == "RED_POTION_0":
+            connection.execute(sqlalchemy.text("INSERT INTO cart_ledgers (cart_id, gold_change, red_change) VALUES (:id, :price, :amount)"), [{"id": cart_id, "price": price, "amount": -cart_item.quantity}])
+        elif item_sku == "GREEN_POTION_0":
+            connection.execute(sqlalchemy.text("INSERT INTO cart_ledgers (cart_id, gold_change, green_change) VALUES (:id, :price, :amount)"), [{"id": cart_id, "price": price, "amount": -cart_item.quantity}])
+        elif item_sku == "BLUE_POTION_0":
+            connection.execute(sqlalchemy.text("INSERT INTO cart_ledgers (cart_id, gold_change, blue_change) VALUES (:id, :price, :amount)"), [{"id": cart_id, "price": price, "amount": -cart_item.quantity}])
+        elif item_sku == "PURPLE_POTION_0":
+            connection.execute(sqlalchemy.text("INSERT INTO cart_ledgers (cart_id, gold_change, purple_change) VALUES (:id, :price, :amount)"), [{"id": cart_id, "price": price, "amount": -cart_item.quantity}])
+        elif item_sku == "BROWN_POTION_0":
+            connection.execute(sqlalchemy.text("INSERT INTO cart_ledgers (cart_id, gold_change, brown_change) VALUES (:id, :price, :amount)"), [{"id": cart_id, "price": price, "amount": -cart_item.quantity}])
+        elif item_sku == "TEAL_POTION_0":
+            connection.execute(sqlalchemy.text("INSERT INTO cart_ledgers (cart_id, gold_change, teal_change) VALUES (:id, :price, :amount)"), [{"id": cart_id, "price": price, "amount": -cart_item.quantity}])
+
     return "OK"
 
 # payment is not amount of gold apparently
@@ -111,19 +126,39 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
     """ """
     with db.engine.begin() as connection:
 
+        red_sum = connection.execute(sqlalchemy.text("SELECT SUM(red_change) FROM cart_ledgers")).scalar_one()
+        red_cur = connection.execute(sqlalchemy.text("SELECT quantity FROM potion_stock where id = 1")).scalar_one()
+        connection.execute(sqlalchemy.text("UPDATE potion_stock SET quantity = :new_red WHERE id = 1"), [{"new_red": red_sum + red_cur}])
+
+        green_sum = connection.execute(sqlalchemy.text("SELECT SUM(green_change) FROM cart_ledgers")).scalar_one()
+        green_cur = connection.execute(sqlalchemy.text("SELECT quantity FROM potion_stock where id = 2")).scalar_one()
+        connection.execute(sqlalchemy.text("UPDATE potion_stock SET quantity = :new_green WHERE id = 2"), [{"new_green": green_sum + green_cur}])
+
+        blue_sum = connection.execute(sqlalchemy.text("SELECT SUM(blue_change) FROM cart_ledgers")).scalar_one()
+        blue_cur = connection.execute(sqlalchemy.text("SELECT quantity FROM potion_stock where id = 3")).scalar_one()
+        connection.execute(sqlalchemy.text("UPDATE potion_stock SET quantity = :new_blue WHERE id = 3"), [{"new_blue": blue_sum + blue_cur}])
+
+        brown_sum = connection.execute(sqlalchemy.text("SELECT SUM(brown_change) FROM cart_ledgers")).scalar_one()
+        brown_cur = connection.execute(sqlalchemy.text("SELECT quantity FROM potion_stock where id = 4")).scalar_one()
+        connection.execute(sqlalchemy.text("UPDATE potion_stock SET quantity = :new_brown WHERE id = 4"), [{"new_brown": brown_sum + brown_cur}])
+
+        teal_sum = connection.execute(sqlalchemy.text("SELECT SUM(teal_change) FROM cart_ledgers")).scalar_one()
+        teal_cur = connection.execute(sqlalchemy.text("SELECT quantity FROM potion_stock where id = 5")).scalar_one()
+        connection.execute(sqlalchemy.text("UPDATE potion_stock SET quantity = :new_teal WHERE id = 5"), [{"new_teal": teal_sum + teal_cur}])
+
+        purple_sum = connection.execute(sqlalchemy.text("SELECT SUM(purple_change) FROM cart_ledgers")).scalar_one()
+        purple_cur = connection.execute(sqlalchemy.text("SELECT quantity FROM potion_stock where id = 6")).scalar_one()
+        connection.execute(sqlalchemy.text("UPDATE potion_stock SET quantity = :new_purple WHERE id = 6"), [{"new_purple": purple_sum + purple_cur}])
+
+        gold_sum = connection.execute(sqlalchemy.text("SELECT SUM(gold_change) FROM cart_ledgers")).scalar_one()
+        connection.execute(sqlalchemy.text("UPDATE resources SET gold = :goldsum + resources.gold"), [{"goldsum": gold_sum}])
+
+        connection.execute(sqlalchemy.text("TRUNCATE cart_ledgers"))
+
+
         # Get quantity and sku using cart_id in carts_and_items
-        order_quantity, order_sku = connection.execute(sqlalchemy.text("SELECT quantity, sku FROM carts_and_items WHERE id = " + str(cart_id))).first()
-        print(order_sku)
-
-        # Get item info for payment using sku in potion_stock
-        potion_price = connection.execute(sqlalchemy.text("SELECT price FROM potion_stock WHERE sku = :ordersku"), [{"ordersku": order_sku}]).scalar_one()
-        print(potion_price)
-
-        # Update gold
-        connection.execute(sqlalchemy.text("UPDATE resources SET gold = resources.gold + '" + str(order_quantity * potion_price) + "'"))
-
-        # Update stock
-        connection.execute(sqlalchemy.text("UPDATE potion_stock SET quantity = potion_stock.quantity - " + str(order_quantity) + " WHERE sku = '" + order_sku + "'"))
+        order_quantity = connection.execute(sqlalchemy.text("SELECT quantity FROM carts_and_items WHERE id = " + str(cart_id))).first()
+        print(order_quantity)
 
         # Return purhcase info
-        return {"total_potions_bought": order_quantity, "total_gold_paid": order_quantity * potion_price}
+        return {"total_potions_bought": order_quantity, "total_gold_paid": gold_sum}
