@@ -45,8 +45,7 @@ def post_deliver_barrels(barrels_delivered: list[Barrel], order_id: int):
 
     return "OK"
 
-# Gets called once a day, v1
-# Make min & max thresholds
+# Gets called once a day
 @router.post("/plan")
 def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
     """ """
@@ -59,7 +58,7 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
         for barrel in wholesale_catalog:
             r = random.randint(0,2)
             if barrel.price <= gold and r == 0 and barrel.potion_type == [1, 0, 0, 0]: 
-                connection.execute(sqlalchemy.text("INSERT INTO resource_ledgers (red_change, green_change, blue_change, gold_change) VALUES (:red, :green, :blue, :gold)"), [{"red": barrel.ml_per_barrel, "blue": 0, "green": 0, "gold": -barrel.price}])
+                connection.execute(sqlalchemy.text("INSERT INTO resource_ledgers (red_change, green_change, blue_change, gold_change) VALUES (:red, :green, :blue, :gold)"), [{"red": barrel.ml_per_barrel, "green": 0, "blue": 0, "gold": -barrel.price}])
                 gold -= barrel.price
                 json.append({
                     "sku": barrel.sku,
@@ -67,7 +66,7 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
                 })
                 
             elif barrel.price <= gold and r == 1 and barrel.potion_type == [0, 1, 0, 0]: 
-                connection.execute(sqlalchemy.text("INSERT INTO resource_ledgers (red_change, green_change, blue_change, gold_change) VALUES (:red, :green, :blue, :gold)"), [{"red": 0, "blue": barrel.ml_per_barrel, "green": 0, "gold": -barrel.price}])
+                connection.execute(sqlalchemy.text("INSERT INTO resource_ledgers (red_change, green_change, blue_change, gold_change) VALUES (:red, :green, :blue, :gold)"), [{"red": 0, "green": barrel.ml_per_barrel, "blue": 0, "gold": -barrel.price}])
                 gold -= barrel.price
                 json.append({
                     "sku": barrel.sku,
@@ -75,7 +74,7 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
                 })
 
             elif barrel.price <= gold and r == 2 and barrel.potion_type == [0, 0, 1, 0]: 
-                connection.execute(sqlalchemy.text("INSERT INTO resource_ledgers (red_change, green_change, blue_change, gold_change) VALUES (:red, :green, :blue, :gold)"), [{"red": 0, "blue": 0, "green": barrel.ml_per_barrel, "gold": -barrel.price}])
+                connection.execute(sqlalchemy.text("INSERT INTO resource_ledgers (red_change, green_change, blue_change, gold_change) VALUES (:red, :green, :blue, :gold)"), [{"red": 0, "green": 0, "blue": barrel.ml_per_barrel, "gold": -barrel.price}])
                 gold -= barrel.price
                 json.append({
                     "sku": barrel.sku,

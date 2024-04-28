@@ -158,7 +158,6 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
 
         # Get quantity and sku using cart_id in carts_and_items
         order_quantity = connection.execute(sqlalchemy.text("SELECT quantity FROM carts_and_items WHERE id = " + str(cart_id))).first()
-        print(order_quantity)
 
         # Return purhcase info
         return {"total_potions_bought": order_quantity, "total_gold_paid": gold_sum}
