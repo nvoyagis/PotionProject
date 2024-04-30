@@ -160,4 +160,4 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
         order_quantity = connection.execute(sqlalchemy.text("SELECT quantity FROM carts_and_items WHERE id = " + str(cart_id))).first()
 
         # Return purhcase info
-        return {"total_potions_bought": order_quantity, "total_gold_paid": gold_sum}
+        return {"total_potions_bought": int(order_quantity), "total_gold_paid": int(gold_sum)}
