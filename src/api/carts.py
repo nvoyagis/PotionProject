@@ -74,17 +74,15 @@ def search_orders(
         order_by = sqlalchemy.desc(order_by)
 
     with db.engine.begin() as connection:
-        num_items = connection.execute(sqlalchemy.text())
+        num_items = connection.execute(sqlalchemy.text("SELECT COUNT(*) FROM search_view")).scalar_one()
+    num_pages = num_items/5
+    if num_items % 5 != 0:
+        num_pages += 1
 
-
-    #searchpage
-    #used to determine if 
-    num_pages = #sql count rows of search_view //5
-
-    num = 0
+    page = 0
     if search_page is not "":
-        num = int(search_page)
-    offset = 5 * num
+        page = int(search_page)
+    offset = 5 * page
 
 
     # probably use the search_view thing instead of carts_and_customers
