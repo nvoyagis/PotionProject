@@ -85,6 +85,7 @@ def search_orders(
     offset = 5 * page
 
 
+    # offset = -1 is page 0, offset is the index of the pages
     # probably use the search_view thing instead of carts_and_customers
     stmt = (
         sqlalchemy.select(
@@ -94,7 +95,7 @@ def search_orders(
             db.search_view.c.imdb_rating,
             db.search_view.c.imdb_votes,
         )
-        .limit(5)
+        .limit(6)
         .offset(offset)
         .order_by(order_by, db.search_view.c.id)
     )
@@ -118,6 +119,11 @@ def search_orders(
                     "timestamp": row.time,
                 }
             )
+
+    if len(json) > 5:
+        next = offset + 1
+
+
 
     return json
     
