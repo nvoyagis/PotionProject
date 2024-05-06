@@ -58,13 +58,13 @@ def search_orders(
 
     order_by = db.carts_and_customers.c.time
     if sort_col is search_sort_options.customer_name:
-        order_by = db.carts_and_customers.c.name
+        order_by = db.search_view.c.name
     elif sort_col is search_sort_options.item_sku:
-        order_by = db.carts_and_items.c.sku
+        order_by = db.search_view.c.sku
     elif sort_col is search_sort_options.line_item_total:
-        order_by = db.carts_and_items.c.quantity
+        order_by = db.search_view.c.quantity
     elif sort_col is search_sort_options.timestamp:
-        order_by = db.carts_and_customers.c.time
+        order_by = db.search_view.c.time
     else:
         assert False
 
@@ -73,33 +73,39 @@ def search_orders(
     elif(sort_order is search_sort_order.desc):
         order_by = sqlalchemy.desc(order_by)
 
-    num = int(search_page)
-    if num == 0:
-        num = -1
+    with db.engine.begin() as connection:
+        num_items = connection.execute(sqlalchemy.text())
+
+
+    #searchpage
+    #used to determine if 
+    num_pages = #sql count rows of search_view //5
+
+    num = 0
+    if search_page is not "":
+        num = int(search_page)
     offset = 5 * num
+
 
     # probably use the search_view thing instead of carts_and_customers
     stmt = (
         sqlalchemy.select(
-            db.carts_and_customers.c.name,
-            db.carts_and_customers.c.title,
-            db.movies.c.year,
-            db.movies.c.imdb_rating,
-            db.movies.c.imdb_votes,
+            db.search_view.c.name,
+            db.search_view.c.title,
+            db.search_view.c.year,
+            db.search_view.c.imdb_rating,
+            db.search_view.c.imdb_votes,
         )
         .limit(5)
         .offset(offset)
-        .order_by(order_by, db.carts_and_customers.c.id)
+        .order_by(order_by, db.search_view.c.id)
     )
 
     # filter only if parameter is passed
     if customer_name != "":
-        stmt = stmt.where(db.carts_and_customers.c.name.ilike(f"%{customer_name}%"))
+        stmt = stmt.where(db.search_view.c.name.ilike(f"%{customer_name}%"))
     if potion_sku != "":
-        stmt = stmt.where(db.carts_and_customers.c.sku.ilike(f"%{potion_sku}%"))
-        #?????
-    if search_page != "":
-        stmt = stmt.where(db.carts_and_customers.c.name.ilike(f"%{customer_name}%"))
+        stmt = stmt.where(db.search_view.c.sku.ilike(f"%{potion_sku}%"))
 
     with db.engine.connect() as conn:
         result = conn.execute(stmt)
