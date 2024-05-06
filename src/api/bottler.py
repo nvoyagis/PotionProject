@@ -82,70 +82,69 @@ def get_bottle_plan():
         r = 1
         g = 1
         b = 1
+
+        # 50% chance of using low-ml colors for each loop. 100% chance of using high-ml colors.
+        if resource_list[0] < avg:
+            r = random.randint(0,1)
+        if resource_list[1] < avg:
+            g = random.randint(0,1)
+        if resource_list[2] < avg:
+            b = random.randint(0,1)
+
+        potion_info = connection.execute(sqlalchemy.text("SELECT type, price FROM potion_stock")).all()
         
-        # Add different potions to the plan.
-        while(red_ml >= 100 or green_ml >= 100 or blue_ml >= 100):
+        # Cycle through each potion type.
+        for potion in potion_info:
+            bottling = True
+            bottled_potions = 0
+            print(potion)
 
-            # 50% chance of using low-ml colors for each loop. 100% chance of using high-ml colors.
-            if red_ml < avg:
-                r = random.randint(0,1)
-            if green_ml < avg:
-                g = random.randint(0,1)
-            if blue_ml < avg:
-                b = random.randint(0,1)
+            # Loop through a potion that can be bottled
+            while bottling:
 
-            potion_question_mark = False
-
-            potion_info = connection.execute(sqlalchemy.text("SELECT type, price FROM potion_stock"))
-            
-            # Cycle through each potion type.
-            for potion in potion_info:
-                bottling = True
-                bottled_potions = 0
-
-                # Loop through a potion that can be bottled
-                while bottling:
-
-                    # Cycle through each ingredient.
-                    for i in range(4):
-                    
-                        # Checks if there are enough resources to make a given potion.
-                        if resource_list[i] < potion.type[i]:
-                            bottling = False
-                            break
-                    
-                    # End a specific potion's loop if a potion can't be bottled.
-                    if bottling is False:
-                        break
-
-                    # Remove resources needed to make a given potion.
-                    for i in range(4):
-                        resource_list[i] -= potion.type[i]
-
-                    # Bottle a potion.
-                    bottled_potions += 1
-
-                    # Help bottle potions without wasting too many resources. Incorporate RNG with the resources that are being used to help bottle a variety of potions.
-                    if potion.type[0] != 0 and 1.2 * red_ml < avg:
-                        r = random.randint(0,1)
-                    if potion.type[1] != 0 and 1.2 * green_ml < avg:
-                        g = random.randint(0,1)
-                    if potion.type[2] != 0 and 1.2 * blue_ml < avg:
-                        b = random.randint(0,1)
-                    
-                    # End loop if a used color is "unlucky" and its amount is relatively low.
-                    if r == 0 or g == 0 or b == 0:
+                # Cycle through each ingredient.
+                for i in range(4):
+                
+                    # Checks if there are enough resources to make a given potion.
+                    if resource_list[i] < potion.type[i]:
+                        bottling = False
                         break
                 
-                # Add bottled potions to the order.
-                if bottled_potions != 0:
-                    order.append({
-                    "potion_type": [80, 0, 0, 20],
-                    "quantity": 1
-                })
+                # End a specific potion's loop if a potion can't be bottled.
+                if bottling is False:
+                    break
+
+                # Remove resources needed to make a given potion.
+                for i in range(4):
+                    resource_list[i] -= potion.type[i]
+
+                # Re-calculate average RGB volume.
+                avg = (resource_list[0] + resource_list[1] + resource_list[2])/3
+
+                # Bottle a potion.
+                bottled_potions += 1
+
+                # Help bottle potions without wasting too many resources. Incorporate RNG with the resources that are being used to help bottle a variety of potions.
+                if potion.type[0] != 0 and 1.2 * resource_list[0] < avg:
+                    r = random.randint(0,1)
+                if potion.type[1] != 0 and 1.2 * resource_list[1] < avg:
+                    g = random.randint(0,1)
+                if potion.type[2] != 0 and 1.2 * resource_list[2] < avg:
+                    b = random.randint(0,1)
+                
+                # End loop if a used color is "unlucky" and its amount is relatively low.
+                if potion.type[0] != 0 and r == 0 or potion.type[1] != 0 and g == 0 or potion.type[2] != 0 and b == 0:
+                    break
             
-        # Submit finished order
-        return order
+            # Add bottled potions to the order.
+            if bottled_potions != 0:
+                order.append({
+                "potion_type": potion.type,
+                "quantity": bottled_potions
+            })
+        
+    # Submit finished order
+    return order
     
 
 if __name__ == "__main__":

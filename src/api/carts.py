@@ -54,6 +54,9 @@ def search_orders(
     time is 5 total line items.
     """
 
+    
+
+    order_by = db.carts_and_customers.c.time
     if sort_col is search_sort_options.customer_name:
         order_by = db.carts_and_customers.c.name
     elif sort_col is search_sort_options.item_sku:
@@ -65,6 +68,17 @@ def search_orders(
     else:
         assert False
 
+    if(sort_order is search_sort_order.asc):
+        order_by = sqlalchemy.asc(order_by)
+    elif(sort_order is search_sort_order.desc):
+        order_by = sqlalchemy.desc(order_by)
+
+    num = int(search_page)
+    if num == 0:
+        num = -1
+    offset = 5 * num
+
+    # probably use the search_view thing instead of carts_and_customers
     stmt = (
         sqlalchemy.select(
             db.carts_and_customers.c.name,
@@ -73,11 +87,37 @@ def search_orders(
             db.movies.c.imdb_rating,
             db.movies.c.imdb_votes,
         )
-        .limit(limit)
+        .limit(5)
         .offset(offset)
-        .order_by(order_by, db.movies.c.movie_id)
+        .order_by(order_by, db.carts_and_customers.c.id)
     )
+
+    # filter only if parameter is passed
+    if customer_name != "":
+        stmt = stmt.where(db.carts_and_customers.c.name.ilike(f"%{customer_name}%"))
+    if potion_sku != "":
+        stmt = stmt.where(db.carts_and_customers.c.sku.ilike(f"%{potion_sku}%"))
+        #?????
+    if search_page != "":
+        stmt = stmt.where(db.carts_and_customers.c.name.ilike(f"%{customer_name}%"))
+
+    with db.engine.connect() as conn:
+        result = conn.execute(stmt)
+        json = []
+        for row in result:
+            json.append(
+                {
+                    "line_item_id": row.id,
+                    "item_sku": row.sku,
+                    "customer_name": row.name,
+                    "line_item_total": row.quantity,
+                    "timestamp": row.time,
+                }
+            )
+
+    return json
     
+
     # make search_view in in SQLeditor
     # wanna use search_view to look at data... limit it... show specific qualities
 
@@ -87,9 +127,22 @@ def search_orders(
 
         connection.execute(sqlalchemy.text())
 
-        customer_names = connection.execute(sqlalchemy.text("SELECT name FROM carts_and_customers GROUP BY " + sort_col + " " + sort_order))
-        quantities = connection.execute(sqlalchemy.text("SELECT name FROM carts_and_customers GROUP BY " + sort_col + " " + sort_order))
-        item_names = connection.execute(sqlalchemy.text("SELECT name FROM carts_and_customers GROUP BY " + sort_col + " " + sort_order))
+
+
+
+
+
+
+
+
+
+
+
+
+
+        customer_names = connection.execute(sqlalchemy.text("SELECT name FROM carts_and_customers GROUP BY :col :ord"), [{"col": sort_col, "ord": sort_order}])
+        quantities = connection.execute(sqlalchemy.text("SELECT name FROM carts_and_customers GROUP BY :col :ord"), [{"col": sort_col, "ord": sort_order}])
+        item_names = connection.execute(sqlalchemy.text("SELECT name FROM carts_and_customers GROUP BY :col :ord"), [{"col": sort_col, "ord": sort_order}])
 
 
     return {
