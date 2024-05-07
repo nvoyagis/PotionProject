@@ -54,9 +54,7 @@ def search_orders(
     time is 5 total line items.
     """
 
-    
-
-    order_by = db.carts_and_customers.c.time
+    order_by = sqlalchemy.desc(db.search_view.c.time)
     if sort_col is search_sort_options.customer_name:
         order_by = db.search_view.c.name
     elif sort_col is search_sort_options.item_sku:
@@ -80,20 +78,26 @@ def search_orders(
         num_pages += 1
 
     page = 0
-    if search_page is not "":
+    if search_page != "":
         page = int(search_page)
     offset = 5 * page
 
 
     # offset = -1 is page 0, offset is the index of the pages
     # probably use the search_view thing instead of carts_and_customers
+    if page == -1:
+        prev = ""
+    else: 
+        prev = page - 1
+
+
     stmt = (
         sqlalchemy.select(
+            db.search_view.c.id,
+            db.search_view.c.sku,
             db.search_view.c.name,
-            db.search_view.c.title,
-            db.search_view.c.year,
-            db.search_view.c.imdb_rating,
-            db.search_view.c.imdb_votes,
+            db.search_view.c.quantity,
+            db.search_view.c.time,
         )
         .limit(6)
         .offset(offset)
@@ -112,17 +116,39 @@ def search_orders(
         for row in result:
             json.append(
                 {
-                    "line_item_id": row.id,
-                    "item_sku": row.sku,
-                    "customer_name": row.name,
-                    "line_item_total": row.quantity,
-                    "timestamp": row.time,
+                    "previous": prev,
+                    "next": "",
+                    "results": [ 
+                        {
+                        "line_item_id": row.id,
+                        "item_sku": row.sku,
+                        "customer_name": row.name,
+                        "line_item_total": row.quantity,
+                        "timestamp": row.time,
+                        }
+                    ],
                 }
             )
 
-    if len(json) > 5:
-        next = offset + 1
-
+        if len(json) > 5:
+            next = page + 1
+            json = []
+            for row in result:
+                json.append(
+                    {
+                        "previous": prev,
+                        "next": next,
+                        "results": [ 
+                            {
+                            "line_item_id": row.id,
+                            "item_sku": row.sku,
+                            "customer_name": row.name,
+                            "line_item_total": row.quantity,
+                            "timestamp": row.time,
+                            }
+                        ],
+                    }
+                )
 
 
     return json

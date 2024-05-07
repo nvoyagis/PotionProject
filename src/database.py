@@ -11,4 +11,4 @@ def database_connection_url():
 engine = create_engine(database_connection_url(), pool_pre_ping=True)
 
 metadata_obj = sqlalchemy.MetaData()
-events = sqlalchemy.Table("search_view", metadata_obj, autoload_with=engine)
+search_view = sqlalchemy.Table("search_view", metadata_obj, autoload_with=engine)
