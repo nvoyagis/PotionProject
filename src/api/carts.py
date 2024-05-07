@@ -79,16 +79,17 @@ def search_orders(
 
     page = 0
     if search_page != "":
-        page = int(search_page)
+        # +1 because search_page is the index, not the actual page number
+        page = int(search_page) + 1
     offset = 5 * page
 
 
     # offset = -1 is page 0, offset is the index of the pages
     # probably use the search_view thing instead of carts_and_customers
-    if page == -1:
+    if int(search_page) == 0:
         prev = ""
     else: 
-        prev = page - 1
+        prev = int(search_page) - 1
 
 
     stmt = (
@@ -131,7 +132,8 @@ def search_orders(
             )
 
         if len(json) > 5:
-            next = page + 1
+            # it's just page b.c. page already has a +1 
+            next = page
             json = []
             for row in result:
                 json.append(
