@@ -27,6 +27,10 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory], order_id: int
                                                                                                                                                     SUM(dark_green_change), SUM(dark_blue_change), SUM(dark_brown_change), 
                                                                                                                                                     SUM(dark_purple_change), SUM(dark_change), SUM(white_change) FROM potion_ledgers""")).first()
         
+        # If there are no ledgers for whatever reason, end the delivery
+        if red is None:
+            return "OK"
+
         # Remove ledgers
         connection.execute(sqlalchemy.text("TRUNCATE potion_ledgers"))
         
