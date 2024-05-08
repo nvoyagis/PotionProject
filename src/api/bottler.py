@@ -29,7 +29,7 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory], order_id: int
         
         # If there are no ledgers for whatever reason, end the delivery
         if red is None:
-            return "OK"
+            return "No potion ledgers"
 
         # Remove ledgers
         connection.execute(sqlalchemy.text("TRUNCATE potion_ledgers"))
@@ -101,6 +101,7 @@ def get_bottle_plan():
         for potion in potion_info:
             bottling = True
             bottled_potions = 0
+            print(potion)
 
             # Loop through a potion that can be bottled
             while bottling:
@@ -116,7 +117,8 @@ def get_bottle_plan():
                 # End a specific potion's loop if a potion can't be bottled.
                 if bottling is False:
                     break
-
+                
+                print(potion.type)
                 # Remove resources needed to make a given potion.
                 for i in range(4):
                     resource_list[i] -= potion.type[i]
