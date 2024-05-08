@@ -41,7 +41,7 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory], order_id: int
                                               dark_ml = resources.dark_ml - :dark_sum * 100 - :dark_red_sum * 20 - :dark_green_sum * 20 - :dark_blue_sum * 20 - :dark_purple_sum * 20 - :dark_brown_sum * 20
                                            """), [{"red_sum": int(red), "green_sum": int(green), "blue_sum": int(blue), "brown_sum": int(brown), "purple_sum": int(purple), "dark_green_sum": int(dark_green), "dark_blue_sum": int(dark_blue), "dark_red_sum": int(dark_red), "dark_brown_sum": int(dark_brown), "dark_purple_sum": int(dark_purple), "dark_sum": int(dark), "white_sum": int(white)}])
                                               
-        connection.execute(sqlalchemy.text("UPDATE potion_stock SET quantity = potion_stock.quantity + :red_sum WHERE id = 1"), [{"red_sum": int(red),}])
+        connection.execute(sqlalchemy.text("UPDATE potion_stock SET quantity = potion_stock.quantity + :red_sum WHERE id = 1"), [{"red_sum": int(red)}])
         connection.execute(sqlalchemy.text("UPDATE potion_stock SET quantity = potion_stock.quantity + :green_sum WHERE id = 2"), [{"green_sum": int(green)}])
         connection.execute(sqlalchemy.text("UPDATE potion_stock SET quantity = potion_stock.quantity + :blue_sum WHERE id = 3"), [{"blue_sum": int(blue)}])
         connection.execute(sqlalchemy.text("UPDATE potion_stock SET quantity = potion_stock.quantity + :brown_sum WHERE id = 4"), [{"brown_sum": int(brown)}])
@@ -101,7 +101,6 @@ def get_bottle_plan():
         for potion in potion_info:
             bottling = True
             bottled_potions = 0
-            print(potion)
 
             # Loop through a potion that can be bottled
             while bottling:
