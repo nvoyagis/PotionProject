@@ -16,6 +16,8 @@ def get_catalog():
         
         # Get data from CursorResult
         for row in potion_info:
+            print(row.name)
+            print(row.quantity)
             if row.quantity != 0:
                 item_list.append({
                     "sku": row.sku,
