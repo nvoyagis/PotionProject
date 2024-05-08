@@ -20,7 +20,12 @@ class PotionInventory(BaseModel):
 def post_deliver_bottles(potions_delivered: list[PotionInventory], order_id: int):
     """ """
     with db.engine.begin() as connection:
-            
+        for potion in potions_delivered:
+            name_change = connection.execute(sqlalchemy.text("SELECT name FROM potion_stock WHERE type = :t"), [{"t": potion.potion_type}]).first()
+            change = name_change[0][:-7] + "_change"
+            connection.execute(sqlalchemy.text(f"INSERT INTO potion_ledgers ({change}) VALUES (:q)"), [{"q": potion.quantity}])
+
+            # get name from potion table and use the firs thalf of name and change it to color_change
         # Get all sums of potion ledgers
         red, green, blue, brown, purple, dark_red, dark_green, dark_blue, dark_brown, dark_purple, dark, white = connection.execute(sqlalchemy.text("""SELECT SUM(red_change), SUM(green_change), SUM(blue_change), 
                                                                                                                                                     SUM(brown_change), SUM(purple_change), SUM(dark_red_change), 

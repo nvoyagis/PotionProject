@@ -236,8 +236,9 @@ def set_item_quantity(cart_id: int, item_sku: str, cart_item: CartItem):
         potion_price, potion_name = connection.execute(sqlalchemy.text("SELECT price, name FROM potion_stock WHERE sku = :ordersku"), [{"ordersku": item_sku}]).first()
         price = int(potion_price) * cart_item.quantity
 
+
         # Insert a potion new ledger
-        connection.execute(sqlalchemy.text("INSERT INTO cart_ledgers (cart_id, gold_change, red_change) VALUES (:id, :price, :amount)"), [{"id": cart_id, "price": price, "amount": -cart_item.quantity, "color": potion_name[:-7] + "_change"}])
+        connection.execute(sqlalchemy.text(f"INSERT INTO cart_ledgers (cart_id, gold_change, {potion_name[:-7]}_change) VALUES (:id, :price, :amount)"), [{"id": cart_id, "price": price, "amount": -cart_item.quantity}])
 
 
 class CartCheckout(BaseModel):
